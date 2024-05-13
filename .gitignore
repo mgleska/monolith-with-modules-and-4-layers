@@ -1,4 +1,6 @@
-/.idea
+/.idea/
+/src/Repository/
+/src/Entity/
 
 ###> symfony/framework-bundle ###
 /.env.local

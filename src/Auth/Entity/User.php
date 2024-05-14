@@ -16,10 +16,10 @@ class User implements UserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(length: 180)]
-    private ?string $login = null;
+    private string $login;
 
     /**
      * @var list<string> The user roles
@@ -30,12 +30,12 @@ class User implements UserInterface
     #[ORM\Column]
     private int $customerId;
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getLogin(): ?string
+    public function getLogin(): string
     {
         return $this->login;
     }
@@ -76,11 +76,7 @@ class User implements UserInterface
      */
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
+        return $this->roles;
     }
 
     /**
@@ -88,7 +84,9 @@ class User implements UserInterface
      */
     public function setRoles(array $roles): static
     {
-        $this->roles = $roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+        $this->roles = array_unique($roles);
 
         return $this;
     }

@@ -17,7 +17,7 @@ class Customer
     private int $id;
 
     #[ORM\Column(length: 255)]
-    private string $name = '';
+    private string $name;
 
     public function getId(): int
     {

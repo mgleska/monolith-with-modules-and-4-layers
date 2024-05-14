@@ -33,16 +33,29 @@ class InitCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $this->connection->executeStatement('TRUNCATE TABLE cst_customer');
-        $this->connection->executeStatement("INSERT INTO cst_customer (id, name) VALUES(1, 'System administrator')");
-        $this->connection->executeStatement("INSERT INTO cst_customer (id, name) VALUES(2, 'Acme Company')");
+        $this->ex('TRUNCATE TABLE cst_customer');
+        $this->ex("INSERT INTO cst_customer (id, name) VALUES(1, 'System owner')");
+        $this->ex("INSERT INTO cst_customer (id, name) VALUES(2, 'Acme Company')");
 
-        $this->connection->executeStatement('TRUNCATE TABLE auth_user');
-        $this->connection->executeStatement("INSERT INTO auth_user (id, login, customer_id, roles) VALUES(NULL, 'admin', 1, JSON_ARRAY(\"ROLE_ADMIN\", \"ROLE_USER\"))");
-        $this->connection->executeStatement("INSERT INTO auth_user (id, login, customer_id, roles) VALUES(NULL, 'user-1', 2, JSON_ARRAY(\"ROLE_USER\"))");
+        $this->ex('TRUNCATE TABLE auth_user');
+        $this->ex("INSERT INTO auth_user (id, login, customer_id, roles) VALUES(NULL, 'admin', 1, JSON_ARRAY(\"ROLE_ADMIN\", \"ROLE_USER\"))");
+        $this->ex("INSERT INTO auth_user (id, login, customer_id, roles) VALUES(NULL, 'user-1', 2, JSON_ARRAY(\"ROLE_USER\"))");
+
+        $this->ex('TRUNCATE TABLE ord_fixed_address');
+        $this->ex("
+            INSERT INTO ord_fixed_address (id, customer_id, external_id, name_company_or_person, address, city, zip_code) 
+            VALUES(1, 2, 'HQ', 'Acme Company', 'ul. Garbary 125', 'Poznań', '61-719')");
 
         $io->success('Database populated with initial data.');
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function ex(string $q): void
+    {
+        $this->connection->executeStatement($q);
     }
 }

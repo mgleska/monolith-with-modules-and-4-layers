@@ -34,6 +34,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Customer/Entity'
                 prefix: 'App\Customer\Entity'
                 alias: Customer
+            Order:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Order/Entity'
+                prefix: 'App\Order\Entity'
+                alias: Order
         controller_resolver:
             auto_mapping: true
 

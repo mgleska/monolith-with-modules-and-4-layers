@@ -21,6 +21,7 @@ services:
             - '../src/Kernel.php'
             - '../src/Auth/Entity'
             - '../src/Customer/Entity'
+            - '../src/Order/Entity'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

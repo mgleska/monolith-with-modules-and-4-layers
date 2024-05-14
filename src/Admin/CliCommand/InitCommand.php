@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Admin\Command;
+declare(strict_types=1);
+
+namespace App\Admin\CliCommand;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
@@ -36,8 +38,8 @@ class InitCommand extends Command
         $this->connection->executeStatement("INSERT INTO cst_customer (id, name) VALUES(2, 'Acme Company')");
 
         $this->connection->executeStatement('TRUNCATE TABLE auth_user');
-        $this->connection->executeStatement("INSERT INTO auth_user (id, login, customer_id) VALUES(NULL, 'admin', 1)");
-        $this->connection->executeStatement("INSERT INTO auth_user (id, login, customer_id) VALUES(NULL, 'user-1', 2)");
+        $this->connection->executeStatement("INSERT INTO auth_user (id, login, customer_id, roles) VALUES(NULL, 'admin', 1, JSON_ARRAY(\"ROLE_ADMIN\", \"ROLE_USER\"))");
+        $this->connection->executeStatement("INSERT INTO auth_user (id, login, customer_id, roles) VALUES(NULL, 'user-1', 2, JSON_ARRAY(\"ROLE_USER\"))");
 
         $io->success('Database populated with initial data.');
 

@@ -1,31 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Entity;
 
 use App\Auth\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_LOGIN', fields: ['login'])]
 #[ORM\Table(name: "auth_user")]
-class User
+class User implements UserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id;
+    private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
-    private string $login;
+    #[ORM\Column(length: 180)]
+    private ?string $login = null;
+
+    /**
+     * @var list<string> The user roles
+     */
+    #[ORM\Column]
+    private array $roles = [];
 
     #[ORM\Column]
     private int $customerId;
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getLogin(): string
+    public function getLogin(): ?string
     {
         return $this->login;
     }
@@ -47,5 +57,48 @@ class User
         $this->customerId = $customerId;
 
         return $this;
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->login;
+    }
+
+    /**
+     * @see UserInterface
+     *
+     * @return list<string>
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    /**
+     * @param list<string> $roles
+     */
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 }

@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Entity;
 
-use App\Customer\Repository\BbbRepository;
+use App\Customer\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: BbbRepository::class)]
+#[ORM\Entity(repositoryClass: CustomerRepository::class)]
 #[ORM\Table(name: "cst_customer")]
 class Customer
 {

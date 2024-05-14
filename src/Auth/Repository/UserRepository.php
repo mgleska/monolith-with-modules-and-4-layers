@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth\Repository;
 
 use App\Auth\Entity\User;
@@ -17,7 +19,7 @@ class UserRepository extends ServiceEntityRepository
     }
 
     //    /**
-    //     * @return User[] Returns an array of User objects
+    //     * @return User2[] Returns an array of User2 objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +33,7 @@ class UserRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?User
+    //    public function findOneBySomeField($value): ?User2
     //    {
     //        return $this->createQueryBuilder('u')
     //            ->andWhere('u.exampleField = :val')

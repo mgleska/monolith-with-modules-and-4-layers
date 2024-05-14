@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Repository;
 
 use App\Customer\Entity\Customer;
@@ -9,7 +11,7 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<Customer>
  */
-class BbbRepository extends ServiceEntityRepository
+class CustomerRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

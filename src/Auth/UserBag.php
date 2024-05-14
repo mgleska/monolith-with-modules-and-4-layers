@@ -11,12 +11,6 @@ class UserBag implements UserBagInterface
     private int $userId;
     private int $customerId;
 
-    public function __construct()
-    {
-        $this->userId = 1;
-        $this->customerId = 11;
-    }
-
     public function getUserId(): int
     {
         return $this->userId;
@@ -25,5 +19,15 @@ class UserBag implements UserBagInterface
     public function getCustomerId(): int
     {
         return $this->customerId;
+    }
+
+    public function setUserId(int $userId): void
+    {
+        $this->userId = $userId;
+    }
+
+    public function setCustomerId(int $customerId): void
+    {
+        $this->customerId = $customerId;
     }
 }

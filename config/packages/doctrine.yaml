@@ -22,18 +22,18 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
                 alias: App
-            Customer:
-                type: attribute
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Customer/Entity'
-                prefix: 'App\Customer\Entity'
-                alias: Customer
             Auth:
                 type: attribute
                 is_bundle: false
                 dir: '%kernel.project_dir%/src/Auth/Entity'
                 prefix: 'App\Auth\Entity'
                 alias: Auth
+            Customer:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Customer/Entity'
+                prefix: 'App\Customer\Entity'
+                alias: Customer
         controller_resolver:
             auto_mapping: true
 

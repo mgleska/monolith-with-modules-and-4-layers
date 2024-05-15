@@ -9,7 +9,7 @@ use App\Order\Dto\FixedAddressDto;
 use App\Order\Repository\FixedAddressRepository;
 use App\Order\Validator\FixedAddressValidator;
 
-class FixedAddressProvider
+class FixedAddressQuery
 {
     public function __construct(
         private readonly FixedAddressRepository $addressRepository,

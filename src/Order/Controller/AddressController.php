@@ -4,23 +4,27 @@ declare(strict_types=1);
 
 namespace App\Order\Controller;
 
-use App\Order\Service\FixedAddressProvider;
+use App\Order\Dto\CreateFixedAddressDto;
+use App\Order\Service\FixedAddressCommand;
+use App\Order\Service\FixedAddressQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 
 class AddressController extends AbstractController
 {
-    #[Route(path: '/address/list', name: 'query-all-addresses', methods: ['GET'])]
-    public function getAllFixedAddress(FixedAddressProvider $provider): JsonResponse
+    #[Route(path: '/address/list', name: 'query-all-addresses', methods: ['GET'], format: 'json')]
+    public function getAllFixedAddress(FixedAddressQuery $provider): JsonResponse
     {
         return new JsonResponse(
             $provider->getAllFixedAddress()
         );
     }
 
-    #[Route(path: '/address/{id<\d+>}', name: 'query-single-address', methods: ['GET'])]
-    public function getFixedAddress(int $id, FixedAddressProvider $provider): JsonResponse
+    #[Route(path: '/address/{id<\d+>}', name: 'query-single-address', methods: ['GET'], format: 'json')]
+    public function getFixedAddress(int $id, FixedAddressQuery $provider): JsonResponse
     {
         return new JsonResponse(
             $provider->getFixedAddress($id)
@@ -28,12 +32,12 @@ class AddressController extends AbstractController
     }
 
     #[Route(path: '/address/create', name: 'command-create-address', methods: ['POST'], format: 'json')]
-    public function createFixedAddress(): JsonResponse
+    public function createFixedAddress(
+        #[MapRequestPayload] CreateFixedAddressDto $dto,
+        FixedAddressCommand $service,
+    ): JsonResponse
     {
-        echo "tutaj " . basename(__FILE__) .' '. __LINE__ . "\n"; exit; // FIXME
-        // return new JsonResponse(
-        //     $provider->getFixedAddress($id)
-        // );
+        $id = $service->createFixedAddress($dto);
+        return new JsonResponse(['id' => $id], Response::HTTP_CREATED);
     }
-
 }

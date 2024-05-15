@@ -94,7 +94,7 @@ class FixedAddress
 
     public function setCity(string $city): static
     {
-        $this->address = $city;
+        $this->city = $city;
 
         return $this;
     }

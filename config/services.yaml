@@ -19,6 +19,7 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+            - '../src/Api/Export/Exception'
             - '../src/Auth/Entity'
             - '../src/Customer/Entity'
             - '../src/Order/Dto'
@@ -26,3 +27,7 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Api\ApiProblemExceptionListener:
+        tags:
+            - {name: kernel.event_listener, event: kernel.exception}

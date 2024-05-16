@@ -15,9 +15,9 @@ class FixedAddressDto
     public string $city;
     public string $zipCode;
 
-    public static function fromEntity(FixedAddress $address): static
+    public static function fromEntity(FixedAddress $address): self
     {
-        $dto = new static();
+        $dto = new self();
         $dto->id = $address->getId();
         $dto->externalId = $address->getExternalId();
         $dto->nameCompanyOrPerson = $address->getNameCompanyOrPerson();

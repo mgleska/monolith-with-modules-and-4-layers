@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Order\Dto;
 
-class CreateFixedAddressDto
+class FixedAddressCreateDto
 {
     public string $externalId;
     public string $nameCompanyOrPerson;

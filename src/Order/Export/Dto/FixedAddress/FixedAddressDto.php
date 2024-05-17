@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Order\Dto;
+namespace App\Order\Export\Dto\FixedAddress;
 
 use App\Order\Entity\FixedAddress;
 

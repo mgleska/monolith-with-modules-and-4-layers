@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Auth;
+namespace App\Auth\Service;
 
 use App\Auth\Export\UserBag as UserBagInterface;
 

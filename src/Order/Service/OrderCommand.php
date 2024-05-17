@@ -8,12 +8,14 @@ use App\Order\Enum\OrderStatusEnum;
 use App\Order\Repository\OrderRepository;
 use App\Order\Validator\OrderValidator;
 use Doctrine\DBAL\Exception as DBALException;
+use Psr\Log\LoggerInterface;
 
 class OrderCommand
 {
     public function __construct(
         private readonly OrderRepository $orderRepository,
         private readonly OrderValidator $validator,
+        private readonly LoggerInterface $logger
     )
     { }
 
@@ -27,6 +29,7 @@ class OrderCommand
 
         $ok = $this->orderRepository->changeStatus($orderId, OrderStatusEnum::NEW, OrderStatusEnum::SENT);
         if ($ok) {
+            $this->logger->info('Order wiht id {id} sent.', ['id' => $orderId]);
             return [true, ''];
         }
         else {

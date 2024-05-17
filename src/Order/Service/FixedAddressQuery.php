@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Order\Service;
 
 use App\Auth\Export\UserBag;
-use App\Order\Dto\FixedAddressDto;
+use App\Order\Export\Dto\FixedAddress\FixedAddressDto;
 use App\Order\Repository\FixedAddressRepository;
 use App\Order\Validator\FixedAddressValidator;
 

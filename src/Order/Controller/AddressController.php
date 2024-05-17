@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Order\Controller;
 
-use App\Api\Export\SuccessResponseDto;
-use App\Order\Dto\FixedAddressCreateDto;
+use App\Api\Export\Dto\SuccessResponseDto;
+use App\Order\Export\Dto\FixedAddress\CreateFixedAddressDto;
 use App\Order\Service\FixedAddressCommand;
 use App\Order\Service\FixedAddressQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,7 +34,7 @@ class AddressController extends AbstractController
 
     #[Route(path: '/address/create', name: 'command-create-address', methods: ['POST'], format: 'json')]
     public function createFixedAddress(
-        #[MapRequestPayload] FixedAddressCreateDto $dto,
+        #[MapRequestPayload] CreateFixedAddressDto $dto,
         FixedAddressCommand $service,
     ): JsonResponse
     {

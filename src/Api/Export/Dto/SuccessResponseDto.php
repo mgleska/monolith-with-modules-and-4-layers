@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Export;
+namespace App\Api\Export\Dto;
+
+use App\Api\Export\ResponseStatusEnum;
 
 class SuccessResponseDto
 {
@@ -13,7 +15,7 @@ class SuccessResponseDto
 
     public function __construct(mixed $data = null)
     {
-        $this->status = ResponseStatus::SUCCESS->value;
+        $this->status = ResponseStatusEnum::SUCCESS->value;
         $this->data = $data;
     }
 }

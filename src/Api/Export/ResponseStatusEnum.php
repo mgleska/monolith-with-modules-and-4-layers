@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Api\Export;
 
-enum ResponseStatus: string
+enum ResponseStatusEnum: string
 {
     // https://github.com/omniti-labs/jsend
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Order\Dto\Order;
+namespace App\Order\Export\Dto\Order;
 
 use App\Order\Entity\Order;
 use App\Order\Entity\OrderLine;

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Order\Service;
 
 use App\Auth\Export\UserBag;
-use App\Order\Dto\FixedAddressCreateDto;
 use App\Order\Entity\FixedAddress;
+use App\Order\Export\Dto\FixedAddress\CreateFixedAddressDto;
 use App\Order\Repository\FixedAddressRepository;
 use App\Order\Validator\FixedAddressValidator;
 
@@ -19,7 +19,7 @@ class FixedAddressCommand
     )
     { }
 
-    public function createFixedAddress(FixedAddressCreateDto $dto): int
+    public function createFixedAddress(CreateFixedAddressDto $dto): int
     {
         $this->validator->validateExternalIdNotUsed($dto->externalId);
 

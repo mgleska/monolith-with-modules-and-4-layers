@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Api;
 
-use App\Api\Export\Exception\ApiProblemException;
+use App\Api\Export\ApiProblemException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;

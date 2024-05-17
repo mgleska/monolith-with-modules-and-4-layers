@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Order\Validator;
 
-use App\Api\Export\Exception\ApiProblemException;
+use App\Api\Export\ApiProblemException;
 use App\Auth\Export\UserBag;
-use App\Order\Api\ApiProblemType;
+use App\Order\Api\ApiProblemTypeEnum;
 use App\Order\Entity\FixedAddress;
 use App\Order\Repository\FixedAddressRepository;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +24,7 @@ class FixedAddressValidator
         if ($address === null) {
             throw new ApiProblemException(
                 Response::HTTP_NOT_FOUND,
-                ApiProblemType::VALIDATOR->value,
+                ApiProblemTypeEnum::VALIDATOR->value,
                 'ORDER_FIXEDADDRESS_NOT_FOUND'
             );
         }
@@ -36,7 +36,7 @@ class FixedAddressValidator
         if ($address !== null) {
             throw new ApiProblemException(
                 Response::HTTP_PRECONDITION_FAILED,
-                ApiProblemType::VALIDATOR->value,
+                ApiProblemTypeEnum::VALIDATOR->value,
                 'ORDER_FIXEDADDRESS_EXTERNAL_ID_ALREADY_EXIST'
             );
         }

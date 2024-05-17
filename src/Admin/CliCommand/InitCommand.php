@@ -56,7 +56,7 @@ class InitCommand extends Command
 
         $this->ex("
             INSERT INTO ord_order (id, customer_id, number, status, quantity_total, loading_name_company_or_person, loading_address, loading_city, loading_zip_code, loading_contact_person, loading_contact_phone, loading_contact_email, delivery_name_company_or_person, delivery_address, delivery_city, delivery_zip_code, delivery_contact_person, delivery_contact_phone, delivery_contact_email) 
-            VALUES (1, 2, '12', 'NEW', 4, 'Acme Company', 'ul. Garbary 125', 'Poznań', '61-719', 'Contact Person', '+44-000-000-000', 'person@email.com', 'Reciver Company', 'ul. Wschodnia', '61-001', 'Poznań', 'Person2', '+48-111-111-111', NULL)");
+            VALUES (1, 2, '12', 'NEW', 4, 'Acme Company', 'ul. Garbary 125', 'Poznań', '61-719', 'Contact Person', '+44-000-000-000', 'person@email.com', 'Reciver Company', 'ul. Wschodnia', 'Poznań', '61-001', 'Person2', '+48-111-111-111', NULL)");
 
         $this->ex("
             INSERT INTO ord_order_line (id, order_id, customer_id, quantity, length, width, height, weight_one_pallet, weight_total, goods_description) 

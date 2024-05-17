@@ -19,12 +19,14 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-            - '../src/Api/Export/Exception'
+            - '../src/Api/Export/Dto'
             - '../src/Auth/Entity'
             - '../src/Customer/Entity'
             - '../src/Order/Dto'
             - '../src/Order/Entity'
             - '../src/Order/Enum'
+            - '../src/Order/Export/Dto'
+            - '../src/Printer/Export/Dto'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

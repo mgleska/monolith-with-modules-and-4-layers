@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Order\Dto\Order;
+namespace App\Order\Export\Dto\Order;
 
 class OrderAddressDto
 {

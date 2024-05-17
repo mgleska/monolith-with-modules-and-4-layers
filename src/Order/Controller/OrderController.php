@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Order\Controller;
 
-use App\Api\Export\FailResponseDto;
-use App\Api\Export\SuccessResponseDto;
-use App\Order\Dto\Order\OrderSendDto;
+use App\Api\Export\Dto\FailResponseDto;
+use App\Api\Export\Dto\SuccessResponseDto;
+use App\Order\Export\Dto\Order\SendOrderDto;
 use App\Order\Service\OrderCommand;
 use App\Order\Service\OrderQuery;
 use Doctrine\DBAL\Exception as DBALException;
@@ -31,7 +31,7 @@ class OrderController extends AbstractController
      */
     #[Route(path: '/order/send', name: 'command-send-order', methods: ['POST'], format: 'json')]
     public function sendOrder(
-        #[MapRequestPayload] OrderSendDto $dto,
+        #[MapRequestPayload] SendOrderDto $dto,
         OrderCommand $service,
     ): JsonResponse
     {
@@ -40,7 +40,7 @@ class OrderController extends AbstractController
             return new JsonResponse(new SuccessResponseDto(), Response::HTTP_OK);
         }
         else {
-            return new JsonResponse(new FailResponseDto($message), Response::HTTP_OK);
+            return new JsonResponse(new FailResponseDto($message), Response::HTTP_BAD_REQUEST);
         }
     }
 }

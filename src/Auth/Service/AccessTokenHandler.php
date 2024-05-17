@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Auth\Service;
 
 use App\Auth\Repository\UserRepository;
-use App\Auth\UserBag;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Http\AccessToken\AccessTokenHandlerInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Order\Validator;
 
-use App\Api\Export\Exception\ApiProblemException;
+use App\Api\Export\ApiProblemException;
 use App\Auth\Export\UserBag;
-use App\Order\Api\ApiProblemType;
+use App\Order\Api\ApiProblemTypeEnum;
 use App\Order\Entity\Order;
 use App\Order\Repository\OrderRepository;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,17 +19,23 @@ class OrderValidator
     )
     {}
 
+    /**
+     * @throws ApiProblemException
+     */
     public function validateExists(?Order $order): void
     {
         if ($order === null) {
             throw new ApiProblemException(
                 Response::HTTP_NOT_FOUND,
-                ApiProblemType::VALIDATOR->value,
+                ApiProblemTypeEnum::VALIDATOR->value,
                 'ORDER_ORDER_NOT_FOUND'
             );
         }
     }
 
+    /**
+     * @throws ApiProblemException
+     */
     public function validateHasAccess(int $orderId): void
     {
         $c = $this->orderRepository->count(['id' => $orderId, 'customerId' => $this->userBag->getCustomerId()]);
@@ -37,7 +43,7 @@ class OrderValidator
         if ($c === 0) {
             throw new ApiProblemException(
                 Response::HTTP_NOT_FOUND,
-                ApiProblemType::VALIDATOR->value,
+                ApiProblemTypeEnum::VALIDATOR->value,
                 'ORDER_ORDER_NOT_FOUND'
             );
         }

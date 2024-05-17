@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Export;
+namespace App\Api\Export\Dto;
+
+use App\Api\Export\ResponseStatusEnum;
 
 class FailResponseDto
 {
@@ -13,7 +15,7 @@ class FailResponseDto
 
     public function __construct(string $message)
     {
-        $this->status = ResponseStatus::FAIL->value;
+        $this->status = ResponseStatusEnum::FAIL->value;
         $this->data = ['message' => $message];
     }
 }

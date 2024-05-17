@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Order\Dto;
+namespace App\Order\Export\Dto\FixedAddress;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class FixedAddressCreateDto
+class CreateFixedAddressDto
 {
     #[Assert\Length(min:1, max:100)]
     #[Assert\Regex(pattern: '/^\S/', message: 'This value do not match regex pattern {{ pattern }}')]

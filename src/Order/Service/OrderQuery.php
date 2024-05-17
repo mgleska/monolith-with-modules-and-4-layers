@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\Order\Service;
 
 use App\Auth\Export\UserBag;
-use App\Order\Dto\OrderDto;
-use App\Order\Dto\OrderLineDto;
+use App\Order\Dto\Order\OrderDto;
 use App\Order\Repository\OrderLineRepository;
 use App\Order\Repository\OrderRepository;
 use App\Order\Repository\OrderSsccRepository;
@@ -29,11 +28,8 @@ class OrderQuery
         $this->orderValidator->validateExists($order);
 
         $lines = $this->lineRepository->findBy(['order' => $order, 'customerId' => $this->userBag->getCustomerId()]);
-        $linesArray = [];
-        foreach ($lines as $line) {
-            $linesArray[] = OrderLineDto::fromEntity($line);
-        }
+        $ssccs = $this->ssccRepository->findBy(['order' => $order, 'customerId' => $this->userBag->getCustomerId()]);
 
-        return OrderDto::fromEntity($order, $linesArray);
+        return OrderDto::fromEntity($order, $lines, $ssccs);
     }
 }

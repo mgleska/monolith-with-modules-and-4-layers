@@ -40,6 +40,7 @@ class InitCommand extends Command
         $this->ex('TRUNCATE TABLE ord_fixed_address');
         $this->ex('TRUNCATE TABLE ord_order');
         $this->ex('TRUNCATE TABLE ord_order_line');
+        $this->ex('TRUNCATE TABLE ord_order_sscc');
 
         $this->ex('SET FOREIGN_KEY_CHECKS=1');
 
@@ -63,6 +64,19 @@ class InitCommand extends Command
         $this->ex("
             INSERT INTO ord_order_line (id, order_id, customer_id, quantity, length, width, height, weight_one_pallet, weight_total, goods_description) 
             VALUES (2, 1, 2, 1, 140, 80, 100, 7500, 7500, 'printers')");
+
+        $this->ex("
+            INSERT INTO ord_order_sscc (id, order_id, customer_id, code) 
+            VALUES (1, 1, 2, 34567)");
+        $this->ex("
+            INSERT INTO ord_order_sscc (id, order_id, customer_id, code) 
+            VALUES (2, 1, 2, 34570)");
+        $this->ex("
+            INSERT INTO ord_order_sscc (id, order_id, customer_id, code) 
+            VALUES (3, 1, 2, 34582)");
+        $this->ex("
+            INSERT INTO ord_order_sscc (id, order_id, customer_id, code) 
+            VALUES (4, 1, 2, 34593)");
 
         $io->success('Database populated with initial data.');
 

@@ -7,6 +7,7 @@ namespace App\Order\Entity;
 use App\Order\Repository\OrderSsccRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use function sprintf;
 
 #[ORM\Entity(repositoryClass: OrderSsccRepository::class)]
 #[ORM\Table(name: "ord_order_sscc")]
@@ -55,14 +56,14 @@ class OrderSscc
         return $this;
     }
 
-    public function getCode(): int
+    public function getCode(): string
     {
-        return $this->code;
+        return sprintf('%018d', $this->code);
     }
 
-    public function setCode(int $code): OrderSscc
+    public function setCode(string $code): OrderSscc
     {
-        $this->code = $code;
+        $this->code = (int)$code;
         return $this;
     }
 }

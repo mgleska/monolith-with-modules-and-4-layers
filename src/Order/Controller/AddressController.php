@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Order\Controller;
 
+use App\Api\Export\SuccessResponseDto;
 use App\Order\Dto\FixedAddressCreateDto;
 use App\Order\Service\FixedAddressCommand;
 use App\Order\Service\FixedAddressQuery;
@@ -38,6 +39,6 @@ class AddressController extends AbstractController
     ): JsonResponse
     {
         $id = $service->createFixedAddress($dto);
-        return new JsonResponse(['id' => $id], Response::HTTP_CREATED);
+        return new JsonResponse(new SuccessResponseDto(['id' => $id]), Response::HTTP_CREATED);
     }
 }

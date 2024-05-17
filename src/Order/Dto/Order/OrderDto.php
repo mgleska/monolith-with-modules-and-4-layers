@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Order\Dto;
+namespace App\Order\Dto\Order;
 
 use App\Order\Entity\Order;
 use App\Order\Entity\OrderLine;
+use App\Order\Entity\OrderSscc;
 use App\Order\Enum\OrderStatusEnum;
+use function array_map;
 
 class OrderDto
 {
@@ -17,14 +19,19 @@ class OrderDto
     public OrderAddressDto $loadingAddress;
     public OrderAddressDto $deliveryAddress;
     /**
-     * @var OrderLine[]
+     * @var OrderLineDto[]
      */
     public array $lines;
+    /**
+     * @var OrderSsccDto[]
+     */
+    public array $ssccs;
 
     /**
      * @param OrderLine[] $lines
+     * @param OrderSscc[] $ssccs
      */
-    public static function fromEntity(Order $entity, array $lines): self
+    public static function fromEntity(Order $entity, array $lines, array $ssccs): self
     {
         $dto = new self();
         $dto->id = $entity->getId();
@@ -49,7 +56,14 @@ class OrderDto
             $entity->getDeliveryContactPhone(),
             $entity->getDeliveryContactEmail(),
         );
-        $dto->lines = $lines;
+        $dto->lines = array_map(
+            function (OrderLine $line) {return OrderLineDto::fromEntity($line);},
+            $lines
+        );
+        $dto->ssccs = array_map(
+            function (OrderSscc $sscc) {return OrderSsccDto::fromEntity($sscc);},
+            $ssccs
+        );
 
         return $dto;
     }

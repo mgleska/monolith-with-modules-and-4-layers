@@ -26,6 +26,7 @@
         "symfony/yaml": "6.4.*"
     },
     "require-dev": {
+        "nikic/php-parser": "^5.0",
         "phpstan/phpstan": "^1.11",
         "phpstan/phpstan-doctrine": "^1.4",
         "phpstan/phpstan-symfony": "^1.4",

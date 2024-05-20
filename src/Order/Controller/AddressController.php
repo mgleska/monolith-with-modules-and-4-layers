@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Order\Controller;
 
+use App\Api\Export\Dto\ApiProblemResponseDto;
 use App\Api\Export\Dto\SuccessResponseDto;
 use App\Order\Export\Dto\FixedAddress\CreateFixedAddressDto;
+use App\Order\Export\Dto\FixedAddress\FixedAddressDto;
 use App\Order\Service\FixedAddressCommand;
 use App\Order\Service\FixedAddressQuery;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,6 +21,10 @@ use Symfony\Component\Routing\Attribute\Route;
 class AddressController extends AbstractController
 {
     #[Route(path: '/address/list', name: 'query-all-addresses', methods: ['GET'], format: 'json')]
+    #[OA\Response(response: 200, description: 'Returns list of fixed addresses suitable for customer.',
+        content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: new Model(type: FixedAddressDto::class)))
+    )]
+    #[OA\Response(response: '400-499', description: 'some exception', content: new Model(type: ApiProblemResponseDto::class))]
     public function getAllFixedAddress(FixedAddressQuery $provider): JsonResponse
     {
         return new JsonResponse(
@@ -25,6 +33,8 @@ class AddressController extends AbstractController
     }
 
     #[Route(path: '/address/{id<\d+>}', name: 'query-single-address', methods: ['GET'], format: 'json')]
+    #[OA\Response(response: 200, description: 'Returns fixed address data.', content: new Model(type: FixedAddressDto::class))]
+    #[OA\Response(response: '400-499', description: 'some exception', content: new Model(type: ApiProblemResponseDto::class))]
     public function getFixedAddress(int $id, FixedAddressQuery $provider): JsonResponse
     {
         return new JsonResponse(
@@ -33,6 +43,8 @@ class AddressController extends AbstractController
     }
 
     #[Route(path: '/address/create', name: 'command-create-address', methods: ['POST'], format: 'json')]
+    #[OA\Response(response: 200, description: 'Returns identifier of created address.', content: new Model(type: SuccessResponseDto::class))]
+    #[OA\Response(response: '400-499', description: 'some exception', content: new Model(type: ApiProblemResponseDto::class))]
     public function createFixedAddress(
         #[MapRequestPayload] CreateFixedAddressDto $dto,
         FixedAddressCommand $service,

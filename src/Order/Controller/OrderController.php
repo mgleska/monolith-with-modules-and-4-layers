@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace App\Order\Controller;
 
+use App\Api\Export\Dto\ApiProblemResponseDto;
 use App\Api\Export\Dto\FailResponseDto;
 use App\Api\Export\Dto\SuccessResponseDto;
+use App\Order\Export\Dto\Order\OrderDto;
 use App\Order\Export\Dto\Order\PrintLabelDto;
 use App\Order\Export\Dto\Order\SendOrderDto;
 use App\Order\Service\OrderCommand;
 use App\Order\Service\OrderQuery;
 use Doctrine\DBAL\Exception as DBALException;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,6 +24,8 @@ use Symfony\Component\Routing\Attribute\Route;
 class OrderController extends AbstractController
 {
     #[Route(path: '/order/{id<\d+>}', name: 'query-single-order', methods: ['GET'], format: 'json')]
+    #[OA\Response(response: 200, description: 'Returns order data.', content: new Model(type: OrderDto::class))]
+    #[OA\Response(response: '400-499', description: 'some exception', content: new Model(type: ApiProblemResponseDto::class))]
     public function getOrder(int $id, OrderQuery $provider): JsonResponse
     {
         return new JsonResponse(

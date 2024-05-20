@@ -14,11 +14,11 @@ class PrintLabelDto
     #[Assert\Valid]
     public AddressDto $deliveryAddress;
 
-    #[Assert\Valid]
     /** @var GoodsLineDto[] $lines */
+    #[Assert\Valid]
     public array $lines;
 
-    #[Assert\Valid]
     /** @var SsccDto[] $ssccs */
+    #[Assert\Valid]
     public array $ssccs;
 }

@@ -42,7 +42,7 @@ class ApiProblemExceptionListener
             new JsonResponse(
                 $response,
                 $exception->getStatusCode(),
-                ['Content-Type' => 'application/problem+json']
+                ['Content-Type' => 'application/json']
             )
         );
 

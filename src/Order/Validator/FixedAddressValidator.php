@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Order\Validator;
 
 use App\Api\Export\ApiProblemException;
-use App\Auth\Export\UserBag;
 use App\Order\Api\ApiProblemTypeEnum;
 use App\Order\Entity\FixedAddress;
 use App\Order\Repository\FixedAddressRepository;
@@ -15,7 +14,6 @@ class FixedAddressValidator
 {
     public function __construct(
         private readonly FixedAddressRepository $addressRepository,
-        private readonly UserBag $userBag,
     )
     { }
 
@@ -30,9 +28,9 @@ class FixedAddressValidator
         }
     }
 
-    public function validateExternalIdNotUsed(string $externalId): void
+    public function validateExternalIdNotUsed(int $customerId, string $externalId): void
     {
-        $address = $this->addressRepository->findOneBy(['customerId' => $this->userBag->getCustomerId(), 'externalId' => $externalId]);
+        $address = $this->addressRepository->findOneBy(['customerId' => $customerId, 'externalId' => $externalId]);
         if ($address !== null) {
             throw new ApiProblemException(
                 Response::HTTP_PRECONDITION_FAILED,

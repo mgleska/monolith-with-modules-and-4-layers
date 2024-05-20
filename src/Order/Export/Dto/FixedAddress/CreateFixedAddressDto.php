@@ -9,6 +9,10 @@ use OpenApi\Attributes as OA;
 
 class CreateFixedAddressDto
 {
+    #[Assert\Range(min: 1)]
+    #[OA\Property(example: '2')]
+    public int $customerId;
+
     #[Assert\Length(min:1, max:100)]
     #[Assert\Regex(pattern: '/^\S/', message: 'This value do not match regex pattern {{ pattern }}')]
     #[OA\Property(example: 'WH1')]

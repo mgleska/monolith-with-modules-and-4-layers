@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Order\Service;
 
-use App\Auth\Export\UserBag;
+use App\Customer\Export\ValidateIdInterface as CustomerValidator;
 use App\Order\Entity\FixedAddress;
 use App\Order\Export\Dto\FixedAddress\CreateFixedAddressDto;
 use App\Order\Repository\FixedAddressRepository;
@@ -14,18 +14,19 @@ class FixedAddressCommand
 {
     public function __construct(
         private readonly FixedAddressRepository $addressRepository,
-        private readonly UserBag $userBag,
         private readonly FixedAddressValidator $validator,
+        private readonly CustomerValidator $customerValidator,
     )
     { }
 
     public function createFixedAddress(CreateFixedAddressDto $dto): int
     {
-        $this->validator->validateExternalIdNotUsed($dto->externalId);
+        $this->customerValidator->validateId($dto->customerId);
+        $this->validator->validateExternalIdNotUsed($dto->customerId, $dto->externalId);
 
         $address = new FixedAddress();
         $address
-            ->setCustomerId($this->userBag->getCustomerId())
+            ->setCustomerId($dto->customerId)
             ->setExternalId($dto->externalId)
             ->setNameCompanyOrPerson($dto->nameCompanyOrPerson)
             ->setAddress($dto->address)

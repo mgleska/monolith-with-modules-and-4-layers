@@ -44,4 +44,15 @@ class OrderRepository extends ServiceEntityRepository
 
         return $countUpdated > 0;
     }
+
+    public function getStatus(int $orderId): OrderStatusEnum
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('o.status')
+            ->from(Order::class, 'o')
+            ->where('o.id = :orderId')
+            ->setParameter('orderId', $orderId);
+
+        return OrderStatusEnum::from($qb->getQuery()->getSingleScalarResult());
+    }
 }

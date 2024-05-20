@@ -4,10 +4,3 @@ order:
         namespace: App\Order\Controller
     type: attribute
     prefix: /order
-
-printer:
-    resource:
-        path: ../src/Printer/Controller/
-        namespace: App\Printer\Controller
-    type: attribute
-    prefix: /printer

@@ -7,13 +7,12 @@ namespace App\Order\Service;
 use App\Api\Export\ApiProblemException;
 use App\Auth\Export\UserBag;
 use App\Order\Export\Dto\Order\OrderDto;
-use App\Order\Export\GetOrderInterface;
 use App\Order\Repository\OrderLineRepository;
 use App\Order\Repository\OrderRepository;
 use App\Order\Repository\OrderSsccRepository;
 use App\Order\Validator\OrderValidator;
 
-class OrderQuery implements GetOrderInterface
+class OrderQuery
 {
     public function __construct(
         private readonly OrderRepository $orderRepository,

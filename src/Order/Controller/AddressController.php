@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class AddressController extends AbstractController
 {
@@ -45,6 +46,7 @@ class AddressController extends AbstractController
     #[Route(path: '/address/create', name: 'command-create-address', methods: ['POST'], format: 'json')]
     #[OA\Response(response: 200, description: 'Returns identifier of created address.', content: new Model(type: SuccessResponseDto::class))]
     #[OA\Response(response: '400-499', description: 'some exception', content: new Model(type: ApiProblemResponseDto::class))]
+    #[IsGranted('ROLE_ADMIN')]
     public function createFixedAddress(
         #[MapRequestPayload] CreateFixedAddressDto $dto,
         FixedAddressCommand $service,

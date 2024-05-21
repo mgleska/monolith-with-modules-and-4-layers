@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Customer\Validator;
 
 use App\Api\Export\ApiProblemException;
-use App\Customer\Api\ApiProblemTypeEnum;
+use App\Customer\Enum\ApiProblemTypeEnum;
 use App\Customer\Export\ValidateIdInterface;
 use App\Customer\Repository\CustomerRepository;
 use Symfony\Component\HttpFoundation\Response;

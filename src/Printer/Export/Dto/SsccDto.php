@@ -9,5 +9,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class SsccDto
 {
     #[Assert\Length(exactly: 18)]
+    #[Assert\NotNull]
     public string $code;
 }

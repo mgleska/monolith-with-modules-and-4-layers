@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Order\Validator;
 
 use App\Api\Export\ApiProblemException;
-use App\Order\Api\ApiProblemTypeEnum;
 use App\Order\Entity\FixedAddress;
+use App\Order\Enum\ApiProblemTypeEnum;
 use App\Order\Repository\FixedAddressRepository;
 use Symfony\Component\HttpFoundation\Response;
 

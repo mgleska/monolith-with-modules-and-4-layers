@@ -9,5 +9,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class PrintLabelDto
 {
     #[Assert\Range(min: 1)]
+    #[Assert\NotNull]
     public int $orderId;
 }

@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 namespace App\Api\Export\Dto;
-use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\ConstraintViolation;
 
@@ -22,9 +21,13 @@ class ApiProblemResponseDto
     #[OA\Property(example: 'city: This value should be of type string.')]
     public ?string $detail;
 
-//    /**
-//     * @var ConstraintViolation[]|null $violations
-//     */
-//    #[OA\Property(example: 'city: This value should be of type string.', ref: new OA\Schema(type: 'array', items: new OA\Items(new Model(type: ConstraintViolation::class))))]
-//    public ?array $violations;
+    /**
+     * @var ConstraintViolation[]|null
+     */
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(type: 'object'),
+        example: '{"propertyPath": "city", "title": "This value should be of type string."}'
+    )]
+    public ?array $violations;
 }

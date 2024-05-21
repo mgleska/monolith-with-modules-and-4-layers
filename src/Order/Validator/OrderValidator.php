@@ -6,8 +6,8 @@ namespace App\Order\Validator;
 
 use App\Api\Export\ApiProblemException;
 use App\Auth\Export\UserBag;
-use App\Order\Api\ApiProblemTypeEnum;
 use App\Order\Entity\Order;
+use App\Order\Enum\ApiProblemTypeEnum;
 use App\Order\Repository\OrderRepository;
 use Symfony\Component\HttpFoundation\Response;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Customer\Api;
+namespace App\Customer\Enum;
 
 enum ApiProblemTypeEnum: string
 {

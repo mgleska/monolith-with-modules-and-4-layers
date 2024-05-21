@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Printer\Service;
 
-use App\Order\Repository\OrderRepository;
 use App\Customer\Repository;
+use App\Order\Repository\OrderRepository;
+use App\Order\Validator as OrderValidator;
 use App\Printer\Export\Dto\PrintLabelDto;
 use Psr\Log\LoggerInterface;
-use App\Order\Validator as OrderValidator;
 
 class BadService
 {

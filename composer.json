@@ -35,6 +35,7 @@
         "phpstan/phpstan": "^1.11",
         "phpstan/phpstan-doctrine": "^1.4",
         "phpstan/phpstan-symfony": "^1.4",
+        "phpunit/phpunit": "^11.1",
         "symfony/maker-bundle": "^1.59"
     },
     "config": {
@@ -83,6 +84,9 @@
         "check": [
             "@php vendor/bin/phpstan analyse src",
             "@php tools/moduleBoundaryChecker.php"
+        ],
+        "testcov": [
+            "@php -d xdebug.mode=coverage -d memory_limit=4G vendor/bin/phpunit --coverage-html coverage"
         ]
     },
     "conflict": {

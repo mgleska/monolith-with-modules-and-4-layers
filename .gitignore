@@ -1,6 +1,8 @@
 /.idea/
 /src/Repository/
 /src/Entity/
+/coverage/
+
 
 ###> symfony/framework-bundle ###
 /.env.local
@@ -15,3 +17,8 @@
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###

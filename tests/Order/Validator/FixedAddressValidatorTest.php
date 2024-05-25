@@ -1,65 +1,120 @@
 <?php
 
+/**
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Order\Validator;
 
 use App\Api\Export\ApiProblemException;
-use App\Auth\Export\UserBag;
-use App\Order\Entity\Order;
-use App\Order\Repository\OrderRepository;
-use App\Order\Validator\OrderValidator;
+use App\Order\Entity\FixedAddress;
+use App\Order\Repository\FixedAddressRepository;
+use App\Order\Validator\FixedAddressValidator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use RepositoryMock\RepositoryMockObject;
+use RepositoryMock\RepositoryMockTrait;
 
 class FixedAddressValidatorTest extends TestCase
 {
-    private OrderValidator $sut;
+    use RepositoryMockTrait;
 
-    private MockObject|OrderRepository $orderRepository;
-    private MockObject|UserBag $userBag;
+    private FixedAddressValidator $sut;
 
-    /**
-     * @noinspection PhpUnhandledExceptionInspection
-     */
+    private FixedAddressRepository|RepositoryMockObject $addressRepository;
+
     protected function setUp(): void
     {
-        $this->orderRepository = $this->createMock(OrderRepository::class);
-        $this->userBag = $this->createMock(UserBag::class);
+        $this->addressRepository = $this->createRepositoryMock(FixedAddressRepository::class);
 
-        $this->sut = new OrderValidator($this->orderRepository, $this->userBag);
+        $this->sut = new FixedAddressValidator($this->addressRepository);
     }
 
     #[Test]
     #[DataProvider('dataProviderValidateExists')]
     public function validateExists(
-        ?Order $order,
-        string $expected
-    ): void {
+        ?FixedAddress $address,
+        string        $expected
+    ): void
+    {
         if ($expected) {
             $this->expectException(ApiProblemException::class);
             $this->expectExceptionMessageMatches('/^' . $expected . '$/');
-        }
-        else {
+        } else {
             $this->expectNotToPerformAssertions();
         }
 
-        $this->sut->validateExists($order);
+        $this->sut->validateExists($address);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public static function dataProviderValidateExists(): array
     {
         return [
             'null' => [
-                'order' => null,
-                'expected' => 'ORDER_ORDER_NOT_FOUND',
+                'address' => null,
+                'expected' => 'ORDER_FIXEDADDRESS_NOT_FOUND',
             ],
             'valid' => [
-                'order' => new Order(),
+                'address' => new FixedAddress(),
                 'expected' => '',
             ],
         ];
     }
+
+    #[Test]
+    #[DataProvider('dataProviderValidateExternalIdNotUsed')]
+    public function validateExternalIdNotUsed(
+        int    $customerId,
+        string $externalId,
+        string $expected
+    ): void
+    {
+        $this->addressRepository->loadStore([
+            [
+                'id' => 1,
+                'customerId' => 10,
+                'externalId' => 'WH1',
+            ]
+        ]);
+
+        if ($expected) {
+            $this->expectException(ApiProblemException::class);
+            $this->expectExceptionMessageMatches('/^' . $expected . '$/');
+        } else {
+            $this->expectNotToPerformAssertions();
+        }
+
+        $this->sut->validateExternalIdNotUsed($customerId, $externalId);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function dataProviderValidateExternalIdNotUsed(): array
+    {
+        return [
+            'id-not-used' => [
+                'customerId' => 10,
+                'externalId' => 'AAA',
+                'expected' => '',
+            ],
+            'different-customer' => [
+                'customerId' => 22,
+                'externalId' => 'WH1',
+                'expected' => '',
+            ],
+            'conflict' => [
+                'customerId' => 10,
+                'externalId' => 'WH1',
+                'expected' => 'ORDER_FIXEDADDRESS_EXTERNAL_ID_ALREADY_EXIST',
+            ],
+        ];
+    }
+
 }

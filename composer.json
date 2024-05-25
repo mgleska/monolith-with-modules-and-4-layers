@@ -31,6 +31,7 @@
         "twig/twig": "^2.12|^3.0"
     },
     "require-dev": {
+        "mgleska/repositorymock": "dev-main",
         "nikic/php-parser": "^5.0",
         "phpstan/phpstan": "^1.11",
         "phpstan/phpstan-doctrine": "^1.4",
@@ -56,6 +57,12 @@
             "App\\Tests\\": "tests/"
         }
     },
+    "repositories": [
+        {
+            "url": "https://github.com/mgleska/repositorymock.git",
+            "type": "vcs"
+        }
+    ],
     "replace": {
         "symfony/polyfill-ctype": "*",
         "symfony/polyfill-iconv": "*",

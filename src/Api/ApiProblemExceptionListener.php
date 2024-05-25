@@ -9,6 +9,8 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 
 class ApiProblemExceptionListener
 {
@@ -26,6 +28,9 @@ class ApiProblemExceptionListener
         $exception = $event->getThrowable();
 
         if (! $exception instanceof ApiProblemException) {
+            if ($exception instanceof HttpException && $exception->getPrevious() instanceof ValidationFailedException) {
+                $exception->setHeaders(['Content-Type' => 'application/problem+json']);
+            }
             return;
         }
 
@@ -42,7 +47,7 @@ class ApiProblemExceptionListener
             new JsonResponse(
                 $response,
                 $exception->getStatusCode(),
-                ['Content-Type' => 'application/json']
+                ['Content-Type' => 'application/problem+json']
             )
         );
 

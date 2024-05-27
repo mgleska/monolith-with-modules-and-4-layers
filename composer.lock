@@ -5814,18 +5814,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mgleska/repositorymock.git",
-                "reference": "1e8f20512d23aea0d80f52a1bf7158c44ac86791"
+                "reference": "759ddb10586c2020d8346cc99287b4b0f39f16c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mgleska/repositorymock/zipball/1e8f20512d23aea0d80f52a1bf7158c44ac86791",
-                "reference": "1e8f20512d23aea0d80f52a1bf7158c44ac86791",
+                "url": "https://api.github.com/repos/mgleska/repositorymock/zipball/759ddb10586c2020d8346cc99287b4b0f39f16c0",
+                "reference": "759ddb10586c2020d8346cc99287b4b0f39f16c0",
                 "shasum": ""
             },
             "require": {
                 "doctrine/collections": "^2.2",
-                "doctrine/orm": "^3.2",
-                "php": "> 8.1",
+                "doctrine/orm": "^3",
+                "php": ">= 8.1",
                 "phpunit/phpunit": "^11.1"
             },
             "require-dev": {
@@ -5849,6 +5849,9 @@
                 "check": [
                     "@php vendor/bin/phpstan analyse -v",
                     "@php vendor/bin/phpcs"
+                ],
+                "testcov": [
+                    "@php -d xdebug.mode=coverage -d memory_limit=4G vendor/bin/phpunit --coverage-html coverage"
                 ]
             },
             "license": [
@@ -5861,10 +5864,10 @@
                 }
             ],
             "support": {
-                "source": "https://github.com/mgleska/repositorymock/tree/main",
+                "source": "https://github.com/mgleska/repositorymock/tree/1.0.0",
                 "issues": "https://github.com/mgleska/repositorymock/issues"
             },
-            "time": "2024-05-25T11:49:38+00:00"
+            "time": "2024-05-27T12:16:10+00:00"
         },
         {
             "name": "myclabs/deep-copy",

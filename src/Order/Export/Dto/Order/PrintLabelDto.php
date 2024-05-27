@@ -10,5 +10,10 @@ class PrintLabelDto
 {
     #[Assert\Range(min: 1)]
     #[Assert\NotNull]
-    public int $orderId;
+    public readonly int $orderId;
+
+    public function __construct(int $orderId)
+    {
+        $this->orderId = $orderId;
+    }
 }

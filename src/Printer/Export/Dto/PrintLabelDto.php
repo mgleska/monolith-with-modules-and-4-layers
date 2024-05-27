@@ -10,19 +10,31 @@ class PrintLabelDto
 {
     #[Assert\Valid]
     #[Assert\NotNull]
-    public AddressDto $loadingAddress;
+    public readonly AddressDto $loadingAddress;
 
     #[Assert\Valid]
     #[Assert\NotNull]
-    public AddressDto $deliveryAddress;
+    public readonly AddressDto $deliveryAddress;
 
     /** @var GoodsLineDto[] $lines */
     #[Assert\Valid]
     #[Assert\NotNull]
-    public array $lines;
+    public readonly array $lines;
 
     /** @var SsccDto[] $ssccs */
     #[Assert\Valid]
     #[Assert\NotNull]
-    public array $ssccs;
+    public readonly array $ssccs;
+
+    /**
+     * @param GoodsLineDto[] $lines
+     * @param SsccDto[] $ssccs
+     */
+    public function __construct(AddressDto $loadingAddress, AddressDto $deliveryAddress, array $lines, array $ssccs)
+    {
+        $this->loadingAddress = $loadingAddress;
+        $this->deliveryAddress = $deliveryAddress;
+        $this->lines = $lines;
+        $this->ssccs = $ssccs;
+    }
 }

@@ -10,5 +10,10 @@ class SsccDto
 {
     #[Assert\Length(exactly: 18)]
     #[Assert\NotNull]
-    public string $code;
+    public readonly string $code;
+
+    public function __construct(string $code)
+    {
+        $this->code = $code;
+    }
 }

@@ -64,35 +64,35 @@ class OrderCommand
 
     private function prepareLabelData(Orderdto $orderDto): PrintLabelDto
     {
-        $dto = new PrintLabelDto();
+        $loadingAddress = new PrintAddressDto(
+            substr($orderDto->loadingAddress->nameCompanyOrPerson, 0, 40),
+            substr($orderDto->loadingAddress->address, 0, 40),
+            substr($orderDto->loadingAddress->zipCode, 0, 15),
+            substr($orderDto->loadingAddress->city, 0, 25),
+        );
 
-        $loadingAddress = new PrintAddressDto();
-        $loadingAddress->line1 = substr($orderDto->loadingAddress->nameCompanyOrPerson, 0, 40);
-        $loadingAddress->line2 = substr($orderDto->loadingAddress->address, 0, 40);
-        $loadingAddress->zipCode = substr($orderDto->loadingAddress->zipCode, 0, 15);
-        $loadingAddress->city = substr($orderDto->loadingAddress->city, 0, 25);
-        $dto->loadingAddress = $loadingAddress;
+        $deliveryAddress = new PrintAddressDto(
+            substr($orderDto->deliveryAddress->nameCompanyOrPerson, 0, 40),
+            substr($orderDto->deliveryAddress->address, 0, 40),
+            substr($orderDto->deliveryAddress->zipCode, 0, 15),
+            substr($orderDto->deliveryAddress->city, 0, 25),
+        );
 
-        $deliveryAddress = new PrintAddressDto();
-        $deliveryAddress->line1 = substr($orderDto->deliveryAddress->nameCompanyOrPerson, 0, 40);
-        $deliveryAddress->line2 = substr($orderDto->deliveryAddress->address, 0, 40);
-        $deliveryAddress->zipCode = substr($orderDto->deliveryAddress->zipCode, 0, 15);
-        $deliveryAddress->city = substr($orderDto->deliveryAddress->city, 0, 25);
-        $dto->deliveryAddress = $deliveryAddress;
-
+        $lines = [];
         foreach ($orderDto->lines as $line) {
-            $goods = new PrintGoodsLineDto();
-            $goods->description = $line->goodsDescription;
-            $goods->quantity = $line->quantity;
-            $dto->lines[] = $goods;
+            $lines[] = new PrintGoodsLineDto(
+                $line->goodsDescription,
+                $line->quantity,
+            );
         }
 
+        $ssccs = [];
         foreach ($orderDto->ssccs as $item) {
-            $sscc = new PrintSsccDto();
-            $sscc->code = $item->code;
-            $dto->ssccs[] = $sscc;
+            $ssccs[] = new PrintSsccDto(
+                $item->code,
+            );
         }
 
-        return $dto;
+        return new PrintLabelDto($loadingAddress, $deliveryAddress, $lines, $ssccs);
     }
 }

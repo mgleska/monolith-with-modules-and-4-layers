@@ -5,18 +5,23 @@ declare(strict_types=1);
 namespace App\Order\Export\Dto\Order;
 
 use App\Order\Entity\OrderSscc;
+use OpenApi\Attributes as OA;
 
 class OrderSsccDto
 {
-    public int $id;
-    public string $code;
+    public readonly int $id;
+
+    #[OA\Property(minLength: 18, maxLength:18, example: '001000000000034593')]
+    public readonly string $code;
+
+    public function __construct(int $id, string $code)
+    {
+        $this->id = $id;
+        $this->code = $code;
+    }
 
     public static function fromEntity(OrderSscc $entity): self
     {
-        $dto = new self();
-        $dto->id = $entity->getId();
-        $dto->code = $entity->getCode();
-
-        return $dto;
+        return new self($entity->getId(), $entity->getCode());
     }
 }

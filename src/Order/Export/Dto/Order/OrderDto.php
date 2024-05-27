@@ -8,6 +8,7 @@ use App\Order\Entity\Order;
 use App\Order\Entity\OrderLine;
 use App\Order\Entity\OrderSscc;
 use App\Order\Enum\OrderStatusEnum;
+
 use function array_map;
 
 class OrderDto
@@ -57,11 +58,15 @@ class OrderDto
             $entity->getDeliveryContactEmail(),
         );
         $dto->lines = array_map(
-            function (OrderLine $line) {return OrderLineDto::fromEntity($line);},
+            function (OrderLine $line) {
+                return OrderLineDto::fromEntity($line);
+            },
             $lines
         );
         $dto->ssccs = array_map(
-            function (OrderSscc $sscc) {return OrderSsccDto::fromEntity($sscc);},
+            function (OrderSscc $sscc) {
+                return OrderSsccDto::fromEntity($sscc);
+            },
             $ssccs
         );
 

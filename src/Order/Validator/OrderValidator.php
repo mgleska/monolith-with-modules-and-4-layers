@@ -16,8 +16,8 @@ class OrderValidator
     public function __construct(
         private readonly OrderRepository $orderRepository,
         private readonly UserBag $userBag,
-    )
-    {}
+    ) {
+    }
 
     /**
      * @throws ApiProblemException

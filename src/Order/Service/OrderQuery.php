@@ -20,8 +20,8 @@ class OrderQuery
         private readonly OrderSsccRepository $ssccRepository,
         private readonly UserBag $userBag,
         private readonly OrderValidator $orderValidator,
-    )
-    { }
+    ) {
+    }
 
     /**
      * @throws ApiProblemException

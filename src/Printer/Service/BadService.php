@@ -16,8 +16,8 @@ class BadService
         private readonly OrderRepository $orderRepository,
         private readonly PrintCommand $command,
         private readonly LoggerInterface $logger,
-    )
-    {}
+    ) {
+    }
 
     public function crossModuleCall(int $id): void
     {

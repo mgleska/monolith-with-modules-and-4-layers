@@ -15,8 +15,8 @@ class FixedAddressQuery
         private readonly FixedAddressRepository $addressRepository,
         private readonly UserBag $userBag,
         private readonly FixedAddressValidator $addressValidator,
-    )
-    { }
+    ) {
+    }
 
     public function getFixedAddress(int $id): FixedAddressDto
     {

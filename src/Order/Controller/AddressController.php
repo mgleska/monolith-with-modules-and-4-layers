@@ -22,7 +22,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class AddressController extends AbstractController
 {
     #[Route(path: '/address/list', name: 'query-all-addresses', methods: ['GET'], format: 'json')]
-    #[OA\Response(response: 200, description: 'Returns list of fixed addresses suitable for customer.',
+    #[OA\Response(
+        response: 200,
+        description: 'Returns list of fixed addresses suitable for customer.',
         content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: new Model(type: FixedAddressDto::class)))
     )]
     #[OA\Response(response: '400-499', description: 'some exception', content: new Model(type: ApiProblemResponseDto::class))]
@@ -50,8 +52,7 @@ class AddressController extends AbstractController
     public function createFixedAddress(
         #[MapRequestPayload] CreateFixedAddressDto $dto,
         FixedAddressCommand $service,
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $id = $service->createFixedAddress($dto);
         return new JsonResponse(new SuccessResponseDto(['id' => $id]), Response::HTTP_CREATED);
     }

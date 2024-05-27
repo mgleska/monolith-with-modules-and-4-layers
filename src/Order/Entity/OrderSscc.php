@@ -7,6 +7,7 @@ namespace App\Order\Entity;
 use App\Order\Repository\OrderSsccRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+
 use function sprintf;
 
 #[ORM\Entity(repositoryClass: OrderSsccRepository::class)]

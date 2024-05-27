@@ -14,8 +14,8 @@ class FixedAddressValidator
 {
     public function __construct(
         private readonly FixedAddressRepository $addressRepository,
-    )
-    { }
+    ) {
+    }
 
     public function validateExists(?FixedAddress $address): void
     {

@@ -40,13 +40,11 @@ class OrderController extends AbstractController
     public function sendOrder(
         #[MapRequestPayload] SendOrderDto $dto,
         OrderCommand $service,
-    ): JsonResponse
-    {
+    ): JsonResponse {
         [$ok, $message] = $service->sendOrder($dto->orderId);
         if ($ok) {
             return new JsonResponse(new SuccessResponseDto(), Response::HTTP_OK);
-        }
-        else {
+        } else {
             return new JsonResponse(new FailResponseDto($message), Response::HTTP_BAD_REQUEST);
         }
     }
@@ -58,13 +56,11 @@ class OrderController extends AbstractController
     public function printLabel(
         #[MapRequestPayload] PrintLabelDto $dto,
         OrderCommand $service,
-    ): Response
-    {
+    ): Response {
         [$ok, $response] = $service->printLabel($dto->orderId);
         if ($ok) {
             return new Response($response, 200, ['Content-Type' => 'text/plain']);
-        }
-        else {
+        } else {
             return new JsonResponse(new FailResponseDto($response), Response::HTTP_BAD_REQUEST);
         }
     }

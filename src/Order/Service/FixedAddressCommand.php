@@ -16,8 +16,8 @@ class FixedAddressCommand
         private readonly FixedAddressRepository $addressRepository,
         private readonly FixedAddressValidator $validator,
         private readonly CustomerValidator $customerValidator,
-    )
-    { }
+    ) {
+    }
 
     public function createFixedAddress(CreateFixedAddressDto $dto): int
     {

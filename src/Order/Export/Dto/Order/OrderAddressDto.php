@@ -14,6 +14,6 @@ class OrderAddressDto
         public string $contactPerson,
         public string $contactPhone,
         public ?string $contactEmail,
-    )
-    {}
+    ) {
+    }
 }

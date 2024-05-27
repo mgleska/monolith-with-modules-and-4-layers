@@ -41,8 +41,7 @@ class OrderValidatorTest extends TestCase
         if ($expected) {
             $this->expectException(ApiProblemException::class);
             $this->expectExceptionMessageMatches('/^' . $expected . '$/');
-        }
-        else {
+        } else {
             $this->expectNotToPerformAssertions();
         }
 
@@ -69,7 +68,7 @@ class OrderValidatorTest extends TestCase
     #[Test]
     #[DataProvider('dataProviderValidateHasAccess')]
     public function validateHasAccess(
-        int    $countResult,
+        int $countResult,
         string $expected
     ): void {
         $this->orderRepository->method('count')->willReturn($countResult);
@@ -77,8 +76,7 @@ class OrderValidatorTest extends TestCase
         if ($expected) {
             $this->expectException(ApiProblemException::class);
             $this->expectExceptionMessageMatches('/^' . $expected . '$/');
-        }
-        else {
+        } else {
             $this->expectNotToPerformAssertions();
         }
 

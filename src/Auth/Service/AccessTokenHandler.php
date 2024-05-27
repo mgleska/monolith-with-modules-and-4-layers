@@ -14,8 +14,7 @@ class AccessTokenHandler implements AccessTokenHandlerInterface
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly UserBag $userBag,
-    )
-    {
+    ) {
     }
 
     public function getUserBadgeFrom(string $accessToken): UserBadge

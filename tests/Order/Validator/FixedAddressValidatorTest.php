@@ -37,9 +37,8 @@ class FixedAddressValidatorTest extends TestCase
     #[DataProvider('dataProviderValidateExists')]
     public function validateExists(
         ?FixedAddress $address,
-        string        $expected
-    ): void
-    {
+        string $expected
+    ): void {
         if ($expected) {
             $this->expectException(ApiProblemException::class);
             $this->expectExceptionMessageMatches('/^' . $expected . '$/');
@@ -70,11 +69,10 @@ class FixedAddressValidatorTest extends TestCase
     #[Test]
     #[DataProvider('dataProviderValidateExternalIdNotUsed')]
     public function validateExternalIdNotUsed(
-        int    $customerId,
+        int $customerId,
         string $externalId,
         string $expected
-    ): void
-    {
+    ): void {
         $this->addressRepository->loadStore([
             [
                 'id' => 1,
@@ -116,5 +114,4 @@ class FixedAddressValidatorTest extends TestCase
             ],
         ];
     }
-
 }

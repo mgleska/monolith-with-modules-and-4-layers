@@ -51,7 +51,8 @@ class ApiProblemExceptionListener
             )
         );
 
-        $this->logger->error('ApiProblemException: type: {type}, title: {title}, status: {status}, uri: {uri}, file: {file}, line: {line}, trace: {trace}',
+        $this->logger->error(
+            'ApiProblemException: type: {type}, title: {title}, status: {status}, uri: {uri}, file: {file}, line: {line}, trace: {trace}',
             [
                 'status' => $exception->getStatusCode(),
                 'type' => $exception->getType(),

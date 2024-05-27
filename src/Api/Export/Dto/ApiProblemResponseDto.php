@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Api\Export\Dto;
+
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\ConstraintViolation;
 

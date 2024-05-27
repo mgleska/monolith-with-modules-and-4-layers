@@ -14,8 +14,8 @@ class CustomerValidator implements ValidateIdInterface
 {
     public function __construct(
         private readonly CustomerRepository $repository,
-    )
-    {}
+    ) {
+    }
 
     /**
      * @throws ApiProblemException

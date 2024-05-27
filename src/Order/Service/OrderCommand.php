@@ -24,8 +24,8 @@ class OrderCommand
         private readonly LoggerInterface $logger,
         private readonly PrintLabelInterface $printLabel,
         private readonly OrderQuery $orderQuery,
-    )
-    { }
+    ) {
+    }
 
     /**
      * @return array{bool, string}
@@ -39,8 +39,7 @@ class OrderCommand
         if ($ok) {
             $this->logger->info('Order with id {id} sent.', ['id' => $orderId]);
             return [true, ''];
-        }
-        else {
+        } else {
             return [false, 'ORDER_STATUS_NOT_VALID_FOR_SEND'];
         }
     }

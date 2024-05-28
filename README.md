@@ -3,16 +3,24 @@
 ## Kluczowe cele i wymagania
 
 1. Aplikacja API JSON zbudowana z użyciem frameworka Symfony.
-2. Architektura: monolit z podziałem na moduły.
-3. Moduły wydzielane według granic funkcjonalności (czasowniki).
-4. Dane w bazie danych grupowane według użycia w modułach.
-5. Moduły jawnie deklarują interfejsy i klasy, które magą być używane przez inne moduły.
-6. CQRS w czystej postaci.
+2. **Architektura: monolit z podziałem na moduły.**
+3. **Moduły wydzielane według granic funkcjonalności (czasowniki).**
+4. Dane w bazie danych grupowane według użycia w modułach (prefiksy w nazwach tabel).
+5. **Moduły jawnie deklarują interfejsy i klasy, które magą być używane przez inne moduły.**
+6. **CQRS w formie podstawowej (bez event-ów).**
 7. Zero CRUD, zero PUT/PATCH/DELETE.
 8. Jedna baza danych, z logicznym podziałem na moduły, dla wielu klientów (multi tenant), z wyróżnionym klientem nadrzędnym (może on mieć dostęp do danych innych klientów)
 9. Duże pokrycie testami jednostkowymi.
+10. **Automatyczna kontrola, czy przestrzegane są reguły dostępu międzymodułowego.**
 
-## Urchomienie:
+## Cele taktyczne (niższej rangi)
+
+1. Wykorzystanie Symfony Serializer i Symfony Validator do przetwarzania danych wejściowych przyjmowanych przez API.
+2. Wykorzystanie gotowych rozwiązań do tworzenia dokumentacji API na podstawie struktur danych przygotowanych dla Serializer-a i ograniczeń (constraint) potrzebnych dla Validator-a.
+3. Ograniczenie setter-ów i getter-ów do niezbędnego minimum.
+4. Użycie Symfony Security. Co teoretycznie powinno dać w miarę łatwą możliwość użycia gotowych rozwiązań do łączenia z różnymi dostawcami tożsamości (np. OAuth2, SAML).
+
+## Uruchomienie:
 
     composer install
     composer run-script apidoc
@@ -59,3 +67,7 @@ Przykładowe command:
     --data '{
     "orderId": 1
     }'
+
+Sprawdzenie kodu i reguł dostępu międzymodułowego:
+
+    composer run-script check

@@ -31,7 +31,7 @@
         "twig/twig": "^2.12|^3.0"
     },
     "require-dev": {
-        "mgleska/repositorymock": "dev-main",
+        "mgleska/repositorymock": "^1",
         "nikic/php-parser": "^5.0",
         "phpstan/phpstan": "^1.11",
         "phpstan/phpstan-doctrine": "^1.4",

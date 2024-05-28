@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f9fe5a2b7ffc7d319a5886d88491828b",
+    "content-hash": "c0c162857557938210ef8478bfc3d6e5",
     "packages": [
         {
             "name": "doctrine/cache",
@@ -5810,16 +5810,16 @@
     "packages-dev": [
         {
             "name": "mgleska/repositorymock",
-            "version": "dev-main",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mgleska/repositorymock.git",
-                "reference": "759ddb10586c2020d8346cc99287b4b0f39f16c0"
+                "reference": "11ce75708c7586bc82584a591f5ef7bc26fa9910"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mgleska/repositorymock/zipball/759ddb10586c2020d8346cc99287b4b0f39f16c0",
-                "reference": "759ddb10586c2020d8346cc99287b4b0f39f16c0",
+                "url": "https://api.github.com/repos/mgleska/repositorymock/zipball/11ce75708c7586bc82584a591f5ef7bc26fa9910",
+                "reference": "11ce75708c7586bc82584a591f5ef7bc26fa9910",
                 "shasum": ""
             },
             "require": {
@@ -5833,7 +5833,6 @@
                 "phpstan/phpstan-doctrine": "^1.4",
                 "squizlabs/php_codesniffer": "^3.10"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -5863,11 +5862,12 @@
                     "email": "mgleska@gmail.com"
                 }
             ],
+            "description": "A package to facilitate the testing of classes/methods which uses ORM Repository and ORM Entity objects.",
             "support": {
                 "source": "https://github.com/mgleska/repositorymock/tree/1.0.0",
                 "issues": "https://github.com/mgleska/repositorymock/issues"
             },
-            "time": "2024-05-27T12:16:10+00:00"
+            "time": "2024-05-28T07:40:44+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -7877,9 +7877,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "mgleska/repositorymock": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

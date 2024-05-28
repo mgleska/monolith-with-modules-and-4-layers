@@ -1,0 +1,6 @@
+order:
+    resource:
+        path: ../src/Order/Controller/
+        namespace: App\Order\Controller
+    type: attribute
+    prefix: /order

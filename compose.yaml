@@ -1,0 +1,15 @@
+name: monolit-demo-app
+
+services:
+  database:
+    image: mariadb:10.11.7
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: db_password
+    volumes:
+      - mysql:/var/lib/mysql:rw
+    ports:
+      - "127.0.0.1:3306:3306"
+
+volumes:
+  mysql:

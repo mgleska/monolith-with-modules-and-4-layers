@@ -68,6 +68,54 @@ Przykładowe command:
     "orderId": 1
     }'
 
+    curl --location 'http://127.0.0.1:8000/order/order/create' \
+    --header 'Content-Type: application/json' \
+    --header 'Authorization: Bearer user-1' \
+    --data-raw '{
+    "loadingDate": "2024-05-19",
+    "loadingFixedAddressExternalId": null,
+    "loadingAddress": {
+    "nameCompanyOrPerson": "Acme Company",
+    "address": "ul. Garbary 125",
+    "city": "Poznań",
+    "zipCode": "61-719"
+    },
+    "loadingContact": {
+    "contactPerson": "Contact Person ",
+    "contactPhone": "+48-603-978-106",
+    "contactEmail": "person@email.com"
+    },
+    "deliveryAddress": {
+    "nameCompanyOrPerson": "Receiver Company",
+    "address": "ul. Wschodnia",
+    "city": "Poznań",
+    "zipCode": "61-001"
+    },
+    "deliveryContact": {
+    "contactPerson": "Person2",
+    "contactPhone": "+48-111-111-111",
+    "contactEmail": null
+    },
+    "lines": [
+    {
+    "quantity": 3,
+    "length": 120,
+    "width": 80,
+    "height": 100,
+    "weightOnePallet": 200,
+    "goodsDescription": "computers"
+    },
+    {
+    "quantity": 5,
+    "length": 120,
+    "width": 80,
+    "height": 200,
+    "weightOnePallet": 200,
+    "goodsDescription": "heavy printers"
+    }
+    ]
+    }'
+
 Sprawdzenie kodu i reguł dostępu międzymodułowego:
 
     composer run-script check

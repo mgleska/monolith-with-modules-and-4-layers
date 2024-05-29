@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Order\Service;
+namespace App\Order\Query;
 
 use App\Api\Export\ApiProblemException;
 use App\Auth\Export\UserBag;
@@ -11,6 +11,7 @@ use App\Order\Repository\OrderLineRepository;
 use App\Order\Repository\OrderRepository;
 use App\Order\Repository\OrderSsccRepository;
 use App\Order\Validator\OrderValidator;
+use Exception;
 
 class OrderQuery
 {
@@ -25,6 +26,7 @@ class OrderQuery
 
     /**
      * @throws ApiProblemException
+     * @throws Exception
      */
     public function getOrder(int $id): OrderDto
     {

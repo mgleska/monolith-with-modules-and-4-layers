@@ -6,38 +6,46 @@ namespace App\Order\Export\Dto\Order;
 
 use App\Order\Entity\OrderLine;
 use OpenApi\Attributes as OA;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class OrderLineDto
 {
-    public int $id;
-    public int $quantity;
+    public readonly ?int $id;
 
+    #[Assert\NotNull(groups: ['create'])]
+    public readonly int $quantity;
+
+    #[Assert\NotNull(groups: ['create'])]
     #[OA\Property(description: 'pallet length in [cm]')]
-    public int $length;
+    public readonly int $length;
 
+    #[Assert\NotNull(groups: ['create'])]
     #[OA\Property(description: 'pallet width in [cm]')]
-    public int $width;
+    public readonly int $width;
 
+    #[Assert\NotNull(groups: ['create'])]
     #[OA\Property(description: 'pallet height in [cm]')]
-    public int $height;
+    public readonly int $height;
 
+    #[Assert\NotNull(groups: ['create'])]
     #[OA\Property(description: 'pallet weight in [kg]')]
-    public float $weightOnePallet;
+    public readonly float $weightOnePallet;
 
     #[OA\Property(description: 'total weight of all pallets of order line, in [kg]')]
-    public float $weightTotal;
+    public readonly ?float $weightTotal;
 
-    #[OA\Property(minLength: 1, maxLength:250, example: 'computers')]
-    public string $goodsDescription;
+    #[Assert\Length(min: 1, max: 250, groups: ['create'])]
+    #[OA\Property(example: 'computers')]
+    public readonly string $goodsDescription;
 
     public function __construct(
-        int $id,
+        ?int $id,
         int $quantity,
         int $length,
         int $width,
         int $height,
         float $weightOnePallet,
-        float $weightTotal,
+        ?float $weightTotal,
         string $goodsDescription
     ) {
         $this->id = $id;

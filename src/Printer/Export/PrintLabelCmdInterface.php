@@ -6,7 +6,7 @@ namespace App\Printer\Export;
 
 use App\Printer\Export\Dto\PrintLabelDto;
 
-interface PrintLabelInterface
+interface PrintLabelCmdInterface
 {
-    public function printLabel(PrintLabelDto $dto, bool $crossModule): string;
+    public function printLabelCmd(PrintLabelDto $dto): string;
 }

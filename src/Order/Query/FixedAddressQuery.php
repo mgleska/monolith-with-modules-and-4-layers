@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Order\Service;
+namespace App\Order\Query;
 
 use App\Auth\Export\UserBag;
 use App\Order\Export\Dto\FixedAddress\FixedAddressDto;

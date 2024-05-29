@@ -9,7 +9,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class SendOrderDto
 {
     #[Assert\Range(min: 1)]
-    #[Assert\NotNull]
     public readonly int $orderId;
 
     public function __construct(int $orderId)

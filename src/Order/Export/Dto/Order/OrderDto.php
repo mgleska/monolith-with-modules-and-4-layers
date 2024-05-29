@@ -8,6 +8,7 @@ use App\Order\Entity\Order;
 use App\Order\Entity\OrderLine;
 use App\Order\Entity\OrderSscc;
 use App\Order\Enum\OrderStatusEnum;
+use Exception;
 use OpenApi\Attributes as OA;
 
 use function array_map;
@@ -21,8 +22,15 @@ class OrderDto
 
     public readonly OrderStatusEnum $status;
     public readonly int $quantityTotal;
+    public readonly DateVO $loadingDate;
+
+    #[OA\Property(minLength: 1, maxLength:100, example: 'WH1')]
+    public readonly ?string $loadingFixedAddressExternalId;
+
     public readonly OrderAddressDto $loadingAddress;
+    public readonly OrderAddressContactDto $loadingContact;
     public readonly OrderAddressDto $deliveryAddress;
+    public readonly OrderAddressContactDto $deliveryContact;
     /**
      * @var OrderLineDto[]
      */
@@ -35,14 +43,19 @@ class OrderDto
     /**
      * @param OrderLineDto[] $lines
      * @param OrderSsccDto[] $ssccs
+     * @throws Exception
      */
     public function __construct(
         int $id,
         string $number,
         OrderStatusEnum $status,
         int $quantityTotal,
+        DateVO $loadingDate,
+        ?string $loadingFixedAddressExternalId,
         OrderAddressDto $loadingAddress,
+        OrderAddressContactDto $loadingContact,
         OrderAddressDto $deliveryAddress,
+        OrderAddressContactDto $deliveryContact,
         array $lines,
         array $ssccs
     ) {
@@ -50,8 +63,12 @@ class OrderDto
         $this->number = $number;
         $this->status = $status;
         $this->quantityTotal = $quantityTotal;
+        $this->loadingDate = $loadingDate;
+        $this->loadingFixedAddressExternalId = $loadingFixedAddressExternalId;
         $this->loadingAddress = $loadingAddress;
+        $this->loadingContact = $loadingContact;
         $this->deliveryAddress = $deliveryAddress;
+        $this->deliveryContact = $deliveryContact;
         $this->lines = $lines;
         $this->ssccs = $ssccs;
     }
@@ -59,6 +76,7 @@ class OrderDto
     /**
      * @param OrderLine[] $lines
      * @param OrderSscc[] $ssccs
+     * @throws Exception
      */
     public static function fromEntity(Order $entity, array $lines, array $ssccs): self
     {
@@ -67,11 +85,15 @@ class OrderDto
             $entity->getNumber(),
             $entity->getStatus(),
             $entity->getQuantityTotal(),
+            new DateVO($entity->getLoadingDate()),
+            $entity->getLoadingFixedAddressExternalId(),
             new OrderAddressDto(
                 $entity->getLoadingNameCompanyOrPerson(),
                 $entity->getLoadingAddress(),
                 $entity->getLoadingCity(),
                 $entity->getLoadingZipCode(),
+            ),
+            new OrderAddressContactDto(
                 $entity->getLoadingContactPerson(),
                 $entity->getLoadingContactPhone(),
                 $entity->getLoadingContactEmail(),
@@ -81,6 +103,8 @@ class OrderDto
                 $entity->getDeliveryAddress(),
                 $entity->getDeliveryCity(),
                 $entity->getDeliveryZipCode(),
+            ),
+            new OrderAddressContactDto(
                 $entity->getDeliveryContactPerson(),
                 $entity->getDeliveryContactPhone(),
                 $entity->getDeliveryContactEmail(),

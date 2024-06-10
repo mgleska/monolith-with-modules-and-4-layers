@@ -90,7 +90,7 @@
             "@php bin/console nelmio:apidoc:dump --format=yaml > public/api.yaml"
         ],
         "check": [
-            "@php vendor/bin/phpstan analyse",
+            "@php vendor/bin/phpstan analyse -v",
             "@php tools/moduleBoundaryChecker.php",
             "@php vendor/bin/phpcs"
         ],

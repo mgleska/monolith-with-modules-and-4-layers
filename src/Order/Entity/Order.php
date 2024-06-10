@@ -6,6 +6,7 @@ namespace App\Order\Entity;
 
 use App\Order\Enum\OrderStatusEnum;
 use App\Order\Repository\OrderRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
@@ -29,6 +30,9 @@ class Order
     #[ORM\Column]
     private int $quantityTotal;
 
+    #[ORM\Column(type: 'date')]
+    private DateTime $loadingDate;
+
     #[ORM\Column(length: 250)]
     private string $loadingNameCompanyOrPerson;
 
@@ -48,7 +52,10 @@ class Order
     private string $loadingContactPhone;
 
     #[ORM\Column(length: 250, nullable: true)]
-    private ?string $loadingContactEmail;
+    private ?string $loadingContactEmail = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $loadingFixedAddressExternalId = null;
 
     #[ORM\Column(length: 250)]
     private string $deliveryNameCompanyOrPerson;
@@ -69,7 +76,7 @@ class Order
     private string $deliveryContactPhone;
 
     #[ORM\Column(length: 250, nullable: true)]
-    private ?string $deliveryContactEmail;
+    private ?string $deliveryContactEmail = null;
 
     public function getId(): int
     {
@@ -272,6 +279,28 @@ class Order
     public function setDeliveryContactEmail(?string $deliveryContactEmail): static
     {
         $this->deliveryContactEmail = $deliveryContactEmail;
+        return $this;
+    }
+
+    public function getLoadingFixedAddressExternalId(): ?string
+    {
+        return $this->loadingFixedAddressExternalId;
+    }
+
+    public function setLoadingFixedAddressExternalId(?string $loadingFixedAddressExternalId): Order
+    {
+        $this->loadingFixedAddressExternalId = $loadingFixedAddressExternalId;
+        return $this;
+    }
+
+    public function getLoadingDate(): DateTime
+    {
+        return $this->loadingDate;
+    }
+
+    public function setLoadingDate(DateTime $loadingDate): Order
+    {
+        $this->loadingDate = $loadingDate;
         return $this;
     }
 }

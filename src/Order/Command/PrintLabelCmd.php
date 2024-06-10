@@ -2,27 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Order\Service;
+namespace App\Order\Command;
 
 use App\Order\Enum\OrderStatusEnum;
 use App\Order\Export\Dto\Order\OrderDto;
+use App\Order\Query\OrderQuery;
 use App\Order\Repository\OrderRepository;
-use App\Order\Validator\OrderValidator;
 use App\Printer\Export\Dto\AddressDto as PrintAddressDto;
 use App\Printer\Export\Dto\GoodsLineDto as PrintGoodsLineDto;
 use App\Printer\Export\Dto\PrintLabelDto;
 use App\Printer\Export\Dto\SsccDto as PrintSsccDto;
-use App\Printer\Export\PrintLabelInterface;
+use App\Printer\Export\PrintLabelCmdInterface;
 use Doctrine\DBAL\Exception as DBALException;
-use Psr\Log\LoggerInterface;
+use Exception;
 
-class OrderCommand
+class PrintLabelCmd
 {
     public function __construct(
         private readonly OrderRepository $orderRepository,
-        private readonly OrderValidator $validator,
-        private readonly LoggerInterface $logger,
-        private readonly PrintLabelInterface $printLabel,
+        private readonly PrintLabelCmdInterface $printLabelCmd,
         private readonly OrderQuery $orderQuery,
     ) {
     }
@@ -30,23 +28,7 @@ class OrderCommand
     /**
      * @return array{bool, string}
      * @throws DBALException
-     */
-    public function sendOrder(int $orderId): array
-    {
-        $this->validator->validateHasAccess($orderId);
-
-        $ok = $this->orderRepository->changeStatus($orderId, OrderStatusEnum::NEW, OrderStatusEnum::SENT);
-        if ($ok) {
-            $this->logger->info('Order with id {id} sent.', ['id' => $orderId]);
-            return [true, ''];
-        } else {
-            return [false, 'ORDER_STATUS_NOT_VALID_FOR_SEND'];
-        }
-    }
-
-    /**
-     * @return array{bool, string}
-     * @throws DBALException
+     * @throws Exception
      */
     public function printLabel(int $orderId): array
     {
@@ -56,7 +38,7 @@ class OrderCommand
             return [false, 'ORDER_PRINT_LABEL_STATUS_NOT_VALID_FOR_PRINT'];
         }
 
-        $label = $this->printLabel->printLabel($this->prepareLabelData($orderDto), true);
+        $label = $this->printLabelCmd->printLabelCmd($this->prepareLabelData($orderDto));
         $this->orderRepository->changeStatus($orderId, OrderStatusEnum::CONFIRMED, OrderStatusEnum::PRINTED);
 
         return [true, $label];
@@ -81,7 +63,7 @@ class OrderCommand
         $lines = [];
         foreach ($orderDto->lines as $line) {
             $lines[] = new PrintGoodsLineDto(
-                $line->goodsDescription,
+                substr($line->goodsDescription, 0, 25),
                 $line->quantity,
             );
         }

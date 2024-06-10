@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Order\Service;
+namespace App\Order\Command;
 
 use App\Customer\Export\ValidateIdInterface as CustomerValidator;
 use App\Order\Entity\FixedAddress;
@@ -10,7 +10,7 @@ use App\Order\Export\Dto\FixedAddress\CreateFixedAddressDto;
 use App\Order\Repository\FixedAddressRepository;
 use App\Order\Validator\FixedAddressValidator;
 
-class FixedAddressCommand
+class CreateFixedAddressCmd
 {
     public function __construct(
         private readonly FixedAddressRepository $addressRepository,

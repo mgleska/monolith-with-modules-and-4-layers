@@ -6,10 +6,10 @@ namespace App\Order\Controller;
 
 use App\Api\Export\Dto\ApiProblemResponseDto;
 use App\Api\Export\Dto\SuccessResponseDto;
+use App\Order\Command\CreateFixedAddressCmd;
 use App\Order\Export\Dto\FixedAddress\CreateFixedAddressDto;
 use App\Order\Export\Dto\FixedAddress\FixedAddressDto;
-use App\Order\Service\FixedAddressCommand;
-use App\Order\Service\FixedAddressQuery;
+use App\Order\Query\FixedAddressQuery;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -51,7 +51,7 @@ class AddressController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function createFixedAddress(
         #[MapRequestPayload] CreateFixedAddressDto $dto,
-        FixedAddressCommand $service,
+        CreateFixedAddressCmd $service,
     ): JsonResponse {
         $id = $service->createFixedAddress($dto);
         return new JsonResponse(new SuccessResponseDto(['id' => $id]), Response::HTTP_CREATED);

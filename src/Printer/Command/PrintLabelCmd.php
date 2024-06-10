@@ -2,32 +2,35 @@
 
 declare(strict_types=1);
 
-namespace App\Printer\Service;
+namespace App\Printer\Command;
 
 use App\Printer\Export\Dto\PrintLabelDto;
-use App\Printer\Export\PrintLabelInterface;
+use App\Printer\Export\PrintLabelCmdInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use function sprintf;
 use function str_repeat;
 
-class PrintCommand implements PrintLabelInterface
+class PrintLabelCmd implements PrintLabelCmdInterface
 {
     public function __construct(
         private readonly ValidatorInterface $validator,
     ) {
     }
 
-    public function printLabel(PrintLabelDto $dto, bool $crossModule): string
+    public function printLabelCmd(PrintLabelDto $dto): string
     {
-        if ($crossModule) {
-            $errors = $this->validator->validate($dto);
-            if ($errors->count() > 0) {
-                throw new ValidationFailedException('aaa', $errors);
-            }
+        $errors = $this->validator->validate($dto);
+        if ($errors->count() > 0) {
+            throw new ValidationFailedException('printLabel', $errors);
         }
 
+        return $this->printLabel($dto);
+    }
+
+    public function printLabel(PrintLabelDto $dto): string
+    {
         $label = sprintf("%-40s | %-40s\n", 'Loading Address', 'Delivery Address');
         $label .= str_repeat('-', 81) . "\n";
         $label .= sprintf("%-40s | %-40s\n", $dto->loadingAddress->line1, $dto->deliveryAddress->line1);

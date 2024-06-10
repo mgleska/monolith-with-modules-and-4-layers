@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Printer\Service;
+namespace App\Printer\Command;
 
 /*
  * To see how module boundary checker works, just uncomment all lines marked with // and run "composer run-script check"

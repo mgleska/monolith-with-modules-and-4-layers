@@ -7,7 +7,7 @@ security:
         # used to reload user from session & other features (e.g. switch_user)
         app_user_provider:
             entity:
-                class: App\Auth\Entity\User
+                class: App\Auth\_4_Infrastructure\Entity\UserEntity
                 property: login
     firewalls:
         dev:
@@ -18,7 +18,7 @@ security:
             stateless: true
             provider: app_user_provider
             access_token:
-                token_handler: App\Auth\Service\AccessTokenHandler
+                token_handler: App\Auth\_1_Connector\EventHandler\AccessTokenHandler
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

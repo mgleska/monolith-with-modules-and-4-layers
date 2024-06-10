@@ -8,17 +8,14 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Node\Stmt;
 use PhpParser\ParserFactory;
-use PhpParser\PrettyPrinter;
 
-const EXPORT_DIR = 'Export';
-
-// Parser for the version you are running on.
-$parser = (new ParserFactory())->createForHostVersion();
+const EXPORT_DIR_1 = '_2_Export';
+const EXPORT_DIR_2 = 'Export';
+const CONNECTOR_DIR_1 = '_1_Connector';
+const CONNECTOR_DIR_2 = 'Connector';
 
 $parser = (new ParserFactory())->createForHostVersion();
 $traverser = new NodeTraverser;
-$prettyPrinter = new PrettyPrinter\Standard;
-
 $traverser->addVisitor(new NameResolver); // we will need resolved names
 
 $inDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'src';
@@ -76,6 +73,7 @@ function analyze(array $stmts): array
 
         $app = $prts[0];
         $module = $prts[1];
+        $layer = $prts[2];
 
         foreach ($st->stmts as $stl2) {
             if (! $stl2 instanceof Stmt\Use_) {
@@ -91,13 +89,25 @@ function analyze(array $stmts): array
                     continue;
                 }
                 if ($prts[1] !== $module) {
-                    if (count($prts) === 2 || $prts[2] !== EXPORT_DIR) {
+                    if (count($prts) === 2 || ! ($prts[2] === EXPORT_DIR_1 || $prts[2] === EXPORT_DIR_2)) {
                         $errors[] = [
-                            'type' => 'use',
+                            'type' => 'use-module',
                             'lineNumber' => $use->name->getLine(),
                             'classPath' => $use->name->name,
                             ];
                     }
+                }
+                if ($prts[1] === $module
+                    && ($layer === CONNECTOR_DIR_1 || $layer === CONNECTOR_DIR_2)
+                    && (count($prts) === 2
+                         || ! ($prts[2] === EXPORT_DIR_1 || $prts[2] === EXPORT_DIR_2 || $prts[2] === CONNECTOR_DIR_1 || $prts[2] === CONNECTOR_DIR_2)
+                       )
+                   ) {
+                    $errors[] = [
+                        'type' => 'use-layer-1',
+                        'lineNumber' => $use->name->getLine(),
+                        'classPath' => $use->name->name,
+                    ];
                 }
             }
         }
@@ -115,8 +125,11 @@ function display(string $file, array $errors): void
     print "  Line  " . $file . "\n";
     print " ------ -----------------------------------------------------------------------------------------\n";
     foreach ($errors as $error) {
-        if ($error['type'] === 'use') {
+        if ($error['type'] === 'use-module') {
             printf("  %-4d  'use' statement breaks module boundary. Imported class/namespace: %s\n", $error['lineNumber'], $error['classPath']);
+        }
+        if ($error['type'] === 'use-layer-1') {
+            printf("  %-4d  'use' statement at layer 1 loads class from layer below 2. Imported class/namespace: %s\n", $error['lineNumber'], $error['classPath']);
         }
     }
     print " ------ -----------------------------------------------------------------------------------------\n\n";

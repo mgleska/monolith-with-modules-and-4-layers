@@ -1,6 +1,6 @@
 order:
     resource:
-        path: ../src/Order/Controller/
-        namespace: App\Order\Controller
+        path: ../src/Order/_1_Connector/Api/
+        namespace: App\Order\_1_Connector\Api
     type: attribute
     prefix: /order

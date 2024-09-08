@@ -17,20 +17,19 @@ services:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
-            - '../src/Entity/'
             - '../src/Kernel.php'
-            - '../src/Api/Export/Dto'
-            - '../src/Auth/Entity'
-            - '../src/Customer/Entity'
-            - '../src/Order/Dto'
-            - '../src/Order/Entity'
-            - '../src/Order/Enum'
-            - '../src/Order/Export/Dto'
+            - '../src/Api/_2_Export/Dto'
+            - '../src/Auth/_4_Infrastructure/Entity'
+            - '../src/Customer/_4_Infrastructure/Entity'
+            - '../src/Order/_2_Export/Dto'
+            - '../src/Order/_2_Export/Enum'
+            - '../src/Order/_3_Action/Enum'
+            - '../src/Order/_4_Infrastructure/Entity'
             - '../src/Printer/Export/Dto'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    App\Api\ApiProblemExceptionListener:
+    App\Api\_1_Connector\EventHandler\ApiProblemExceptionHandler:
         tags:
             - {name: kernel.event_listener, event: kernel.exception}

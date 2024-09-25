@@ -1,4 +1,4 @@
-name: monolit-demo-app
+name: monolith-demo-app
 
 services:
   database:
@@ -11,5 +11,24 @@ services:
     ports:
       - "127.0.0.1:3306:3306"
 
+  php-api:
+    build:
+      context: docker
+    image: local-php-api
+    restart: unless-stopped
+    depends_on:
+      - database
+    volumes:
+      - .:/app:rw
+      - vendor:/app/vendor
+      - var:/app/var
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      DATABASE_URL: "mysql://root:db_password@database:3306/monolith-app?serverVersion=10.11.7-MariaDB&charset=utf8mb4"
+    command: ["/bin/sh", "-c", "/app/start-app.sh ; sleep 36000"]
+
 volumes:
   mysql:
+  vendor:
+  var:

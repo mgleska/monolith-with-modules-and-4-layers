@@ -206,17 +206,20 @@ This new approach allow to encapsulate domain logic related to the command "I wo
 
 ## Usage:
 
+    docker compose up    
+
+It will download required images, build custom image for PHP and execute script `start-app.sh` containing commands: 
+
     composer install
     composer run-script apidoc
-
-    docker compose up -d      # to start MariaDB
 
     php bin/console doctrine:database:create
     php bin/console doctrine:migrations:migrate
     php bin/console admin:init
-    php -S 127.0.0.1:8000 -t public/
 
-Testing and checking:
+    php -S 0.0.0.0:8000 -t public/
+
+Testing and checking (run the command inside `php-api` container):
 
     composer run-script test
     composer run-script check

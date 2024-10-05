@@ -21,7 +21,7 @@
 
 ## 4-layers Architecture
 
-<img src="docs/img/4-layers-architecture.svg">
+<img src="docs/img/4-layers-architecture.svg" alt="architecture layers">
 
 ### General principles of 4-layers Architecture
 
@@ -124,7 +124,7 @@ General rule for layer 4:Infrastructure is, that component from this layer can *
 ### Directory structure
 
 At level 1 below `src/` directory, each directory represents a module.\
-In this example implemenation we have:
+In this example implementation we have:
 ```text
 src/
    Admin/
@@ -146,7 +146,7 @@ src/
       Export/
       Infrastructure/
 ```
-For better visualization of layers and its relation, for modules other than Printer, layer directores are named with numeric prefix:
+For better visualization of layers and its relation, for modules other than Printer, layer directories are named with numeric prefix:
 ```text
 src/
    ...
@@ -165,7 +165,7 @@ With proposed directory structure we can quite easy check if **4-layers Architec
 
 Supplied program `tools/moduleBoundaryChecker.php` does such check.
 
-Probbably we can also use other tools designed for architecutre checking - for example `qossmic/deptrac`.
+Probably we can also use other tools designed for architecture checking - for example `qossmic/deptrac`.
 
 ## "Zero CRUD, zero PUT/PATCH/DELETE" - why?
 
@@ -206,7 +206,7 @@ This new approach allow to encapsulate domain logic related to the command "I wo
 
 ## Usage:
 
-    docker compose up    
+    docker compose up
 
 It will download required images, build custom image for PHP and execute script `start-app.sh` containing commands: 
 
@@ -224,7 +224,7 @@ Testing and checking (run the command inside `php-api` container):
     composer run-script test
     composer run-script check
 
-API documenatation:
+API documentation:
 
     http://127.0.0.1:8000/api.html
     http://127.0.0.1:8000/api.yaml
@@ -313,3 +313,7 @@ Sample command:
     }
     ]
     }'
+
+## Image for Kubernetes:
+
+    docker build -f docker/Dockerfile -t app-kubernetes --target app-kubernetes .

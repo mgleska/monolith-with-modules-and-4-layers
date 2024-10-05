@@ -14,6 +14,7 @@ services:
   php-api:
     build:
       context: docker
+      target: dev
     image: local-php-api
     restart: unless-stopped
     depends_on:
@@ -26,7 +27,7 @@ services:
       - "127.0.0.1:8000:8000"
     environment:
       DATABASE_URL: "mysql://root:db_password@database:3306/monolith-app?serverVersion=10.11.7-MariaDB&charset=utf8mb4"
-    command: ["/bin/sh", "-c", "/app/start-app.sh ; sleep 36000"]
+    command: ["/bin/sh", "-c", "/app/start-app.sh dev ; sleep 36000"]
 
 volumes:
   mysql:

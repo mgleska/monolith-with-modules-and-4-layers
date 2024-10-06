@@ -19,17 +19,17 @@ class AccessTokenService implements GetUserBadgeFromInterface
 
     public function getUserBadgeFrom(string $accessToken): UserBadge
     {
-        $userEntity = $this->userRepository->findOneBy(['login' => $accessToken]);
-        if (null === $userEntity) {
+        $user = $this->userRepository->findOneBy(['login' => $accessToken]);
+        if (null === $user) {
             throw new BadCredentialsException('Invalid credentials.');
         }
 
-        $this->userBag->setUserId($userEntity->getId());
-        $this->userBag->setCustomerId($userEntity->getCustomerId());
+        $this->userBag->setUserId($user->getId());
+        $this->userBag->setCustomerId($user->getCustomerId());
 
         // and return a UserBadge object containing the user identifier from the found token
         // (this is the same identifier used in Security configuration; it can be an email,
         // a UUID, a username, a database ID, etc.)
-        return new UserBadge($userEntity->getLogin());
+        return new UserBadge($user->getLogin());
     }
 }

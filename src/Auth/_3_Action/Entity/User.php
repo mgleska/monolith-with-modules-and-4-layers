@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Auth\_4_Infrastructure\Entity;
+namespace App\Auth\_3_Action\Entity;
 
 use App\Auth\_4_Infrastructure\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_LOGIN', fields: ['login'])]
 #[ORM\Table(name: "auth_user")]
-class UserEntity implements UserInterface
+class User implements UserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

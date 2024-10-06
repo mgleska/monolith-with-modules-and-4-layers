@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Order\_4_Infrastructure\Entity;
+namespace App\Order\_3_Action\Entity;
 
 use App\Order\_4_Infrastructure\Repository\FixedAddressRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FixedAddressRepository::class)]
 #[ORM\Table(name: "ord_fixed_address")]
-class FixedAddressEntity
+class FixedAddress
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

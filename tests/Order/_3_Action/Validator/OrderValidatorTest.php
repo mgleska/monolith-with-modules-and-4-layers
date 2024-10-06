@@ -7,9 +7,9 @@ namespace App\Tests\Order\_3_Action\Validator;
 use App\Api\_2_Export\ApiProblemException;
 use App\Auth\_2_Export\UserBagInterface;
 use App\Order\_2_Export\Dto\Order\OrderAddressDto;
+use App\Order\_3_Action\Entity\FixedAddress;
+use App\Order\_3_Action\Entity\Order;
 use App\Order\_3_Action\Validator\OrderValidator;
-use App\Order\_4_Infrastructure\Entity\FixedAddressEntity;
-use App\Order\_4_Infrastructure\Entity\OrderEntity;
 use App\Order\_4_Infrastructure\Repository\FixedAddressRepository;
 use App\Order\_4_Infrastructure\Repository\OrderRepository;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -48,7 +48,7 @@ class OrderValidatorTest extends TestCase
     #[Test]
     #[DataProvider('dataProviderValidateExists')]
     public function validateExists(
-        ?OrderEntity $order,
+        ?Order $order,
         string $expected
     ): void {
         if ($expected) {
@@ -72,7 +72,7 @@ class OrderValidatorTest extends TestCase
                 'expected' => 'ORDER_ORDER_NOT_FOUND',
             ],
             'valid' => [
-                'order' => new OrderEntity(),
+                'order' => new Order(),
                 'expected' => '',
             ],
         ];
@@ -119,7 +119,7 @@ class OrderValidatorTest extends TestCase
     public function validateLoadingAddressForCreate(
         ?string $fixedAddressExternalId,
         ?OrderAddressDto $addressDto,
-        ?FixedAddressEntity $expectedAddress,
+        ?FixedAddress $expectedAddress,
         string $expectedExceptionMsg
     ): void {
         if ($expectedExceptionMsg) {
@@ -170,7 +170,7 @@ class OrderValidatorTest extends TestCase
             'valid-external-id' => [
                 'fixedAddressExternalId' => 'HQ',
                 'addressDto' => null,
-                'expectedAddress' => self::createFakeObject(FixedAddressEntity::class, [
+                'expectedAddress' => self::createFakeObject(FixedAddress::class, [
                     'id' => 2,
                     'customerId' => self::CUSTOMER_ID,
                     'externalId' => 'HQ'

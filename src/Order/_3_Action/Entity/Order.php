@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Order\_4_Infrastructure\Entity;
+namespace App\Order\_3_Action\Entity;
 
 use App\Order\_2_Export\Enum\OrderStatusEnum;
 use App\Order\_4_Infrastructure\Repository\OrderRepository;
@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: "ord_order")]
-class OrderEntity
+class Order
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -287,7 +287,7 @@ class OrderEntity
         return $this->loadingFixedAddressExternalId;
     }
 
-    public function setLoadingFixedAddressExternalId(?string $loadingFixedAddressExternalId): OrderEntity
+    public function setLoadingFixedAddressExternalId(?string $loadingFixedAddressExternalId): static
     {
         $this->loadingFixedAddressExternalId = $loadingFixedAddressExternalId;
         return $this;
@@ -298,7 +298,7 @@ class OrderEntity
         return $this->loadingDate;
     }
 
-    public function setLoadingDate(DateTime $loadingDate): OrderEntity
+    public function setLoadingDate(DateTime $loadingDate): static
     {
         $this->loadingDate = $loadingDate;
         return $this;

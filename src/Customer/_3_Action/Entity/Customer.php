@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Customer\_4_Infrastructure\Entity;
+namespace App\Customer\_3_Action\Entity;
 
 use App\Customer\_4_Infrastructure\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 #[ORM\Table(name: "cst_customer")]
-class CustomerEntity
+class Customer
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

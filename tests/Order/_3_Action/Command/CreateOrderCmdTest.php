@@ -11,11 +11,11 @@ use App\Order\_2_Export\Dto\Order\OrderAddressDto;
 use App\Order\_2_Export\Dto\Order\OrderLineDto;
 use App\Order\_2_Export\Enum\OrderStatusEnum;
 use App\Order\_3_Action\Command\CreateOrderCmd;
+use App\Order\_3_Action\Entity\FixedAddress;
+use App\Order\_3_Action\Entity\Order;
+use App\Order\_3_Action\Entity\OrderLine;
 use App\Order\_3_Action\Validator\GenericDtoValidator;
 use App\Order\_3_Action\Validator\OrderValidator;
-use App\Order\_4_Infrastructure\Entity\FixedAddressEntity;
-use App\Order\_4_Infrastructure\Entity\OrderEntity;
-use App\Order\_4_Infrastructure\Entity\OrderLineEntity;
 use App\Order\_4_Infrastructure\Repository\OrderLineRepository;
 use App\Order\_4_Infrastructure\Repository\OrderRepository;
 use DateTime;
@@ -84,7 +84,7 @@ class CreateOrderCmdTest extends TestCase
     #[DataProvider('dataProviderCreateOrder')]
     public function createOrder(
         array $dtoData,
-        ?FixedAddressEntity $validatorResponse,
+        ?FixedAddress $validatorResponse,
         int $expectedId,
         array $expectedOrder,
         array $expectedLines
@@ -112,7 +112,7 @@ class CreateOrderCmdTest extends TestCase
         $this->assertSame($expectedId, $result);
 
         $dbOrder = $this->orderRepository->getStoreContent();
-        /** @var OrderEntity $order */
+        /** @var Order $order */
         $order = $dbOrder[$expectedId];
         $this->assertSame($expectedId, $order->getId());
         $this->assertSame($expectedOrder['customerId'], $order->getCustomerId());
@@ -138,7 +138,7 @@ class CreateOrderCmdTest extends TestCase
 
         $dbOrderLine = $this->orderLineRepository->getStoreContent();
         $this->assertSame(count($expectedLines), count($dbOrderLine));
-        /** @var OrderLineEntity $orderLineEntity */
+        /** @var OrderLine $orderLineEntity */
         foreach ($dbOrderLine as $orderLineEntity) {
             $this->assertSame(self::CUSTOMER_ID, $orderLineEntity->getCustomerId());
             $this->assertSame($expectedId, $orderLineEntity->getOrder()->getId());
@@ -259,7 +259,7 @@ class CreateOrderCmdTest extends TestCase
                         ],
                     ],
                 ],
-                'validatorResponse' => self::createFakeObject(FixedAddressEntity::class, [
+                'validatorResponse' => self::createFakeObject(FixedAddress::class, [
                     'id' => 20,
                     'customerId' => self::CUSTOMER_ID,
                     'externalId' => 'WH1',
@@ -318,7 +318,7 @@ class CreateOrderCmdTest extends TestCase
     /**
      * @param array<int, array<string, mixed>> $expectedLines
      */
-    private function isMatchingOrderLine(OrderLineEntity $entity, array $expectedLines): bool
+    private function isMatchingOrderLine(OrderLine $entity, array $expectedLines): bool
     {
         $matchFound = false;
         foreach ($expectedLines as $line) {

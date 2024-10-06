@@ -9,11 +9,11 @@ use App\Order\_2_Export\Command\CreateOrderInterface;
 use App\Order\_2_Export\Dto\Order\CreateOrderDto;
 use App\Order\_2_Export\Dto\Order\OrderLineDto;
 use App\Order\_2_Export\Enum\OrderStatusEnum;
+use App\Order\_3_Action\Entity\FixedAddress;
+use App\Order\_3_Action\Entity\Order;
+use App\Order\_3_Action\Entity\OrderLine;
 use App\Order\_3_Action\Validator\GenericDtoValidator;
 use App\Order\_3_Action\Validator\OrderValidator;
-use App\Order\_4_Infrastructure\Entity\FixedAddressEntity;
-use App\Order\_4_Infrastructure\Entity\OrderEntity;
-use App\Order\_4_Infrastructure\Entity\OrderLineEntity;
 use App\Order\_4_Infrastructure\Repository\OrderLineRepository;
 use App\Order\_4_Infrastructure\Repository\OrderRepository;
 use DateTime;
@@ -75,9 +75,9 @@ class CreateOrderCmd implements CreateOrderInterface
     /**
      * @throws Exception
      */
-    private function createOrderEntity(CreateOrderDto $dto, FixedAddressEntity|null $fixedAddress): OrderEntity
+    private function createOrderEntity(CreateOrderDto $dto, FixedAddress|null $fixedAddress): Order
     {
-        $order = new OrderEntity();
+        $order = new Order();
         $order->setCustomerId($this->userBag->getCustomerId());
         $order->setNumber($this->orderNumberGenerator());
         $order->setStatus(OrderStatusEnum::NEW);
@@ -120,9 +120,9 @@ class CreateOrderCmd implements CreateOrderInterface
         return $nr;
     }
 
-    private function createOrderLineEntity(OrderLineDto $lineDto, OrderEntity $order): OrderLineEntity
+    private function createOrderLineEntity(OrderLineDto $lineDto, Order $order): OrderLine
     {
-        $entity = new OrderLineEntity();
+        $entity = new OrderLine();
         $entity->setCustomerId($this->userBag->getCustomerId());
         $entity->setOrder($order);
         $entity->setQuantity($lineDto->quantity);

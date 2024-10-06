@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Order\_4_Infrastructure\Entity;
+namespace App\Order\_3_Action\Entity;
 
 use App\Order\_4_Infrastructure\Repository\OrderSsccRepository;
 use Doctrine\DBAL\Types\Types;
@@ -12,7 +12,7 @@ use function sprintf;
 
 #[ORM\Entity(repositoryClass: OrderSsccRepository::class)]
 #[ORM\Table(name: "ord_order_sscc")]
-class OrderSsccEntity
+class OrderSscc
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -24,7 +24,7 @@ class OrderSsccEntity
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: 'order_id', referencedColumnName: 'id', nullable: false)]
-    private OrderEntity $order;
+    private Order $order;
 
     #[ORM\Column(type: Types::BIGINT)]
     private int $code;
@@ -46,12 +46,12 @@ class OrderSsccEntity
         return $this;
     }
 
-    public function getOrder(): OrderEntity
+    public function getOrder(): Order
     {
         return $this->order;
     }
 
-    public function setOrder(OrderEntity $order): OrderSsccEntity
+    public function setOrder(Order $order): static
     {
         $this->order = $order;
         return $this;
@@ -62,7 +62,7 @@ class OrderSsccEntity
         return sprintf('%018d', $this->code);
     }
 
-    public function setCode(string $code): OrderSsccEntity
+    public function setCode(string $code): static
     {
         $this->code = (int)$code;
         return $this;

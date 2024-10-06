@@ -7,9 +7,9 @@ namespace App\Order\_3_Action\Validator;
 use App\Api\_2_Export\ApiProblemException;
 use App\Auth\_2_Export\UserBagInterface;
 use App\Order\_2_Export\Dto\Order\OrderAddressDto;
+use App\Order\_3_Action\Entity\FixedAddress;
+use App\Order\_3_Action\Entity\Order;
 use App\Order\_3_Action\Enum\ApiProblemTypeEnum;
-use App\Order\_4_Infrastructure\Entity\FixedAddressEntity;
-use App\Order\_4_Infrastructure\Entity\OrderEntity;
 use App\Order\_4_Infrastructure\Repository\FixedAddressRepository;
 use App\Order\_4_Infrastructure\Repository\OrderRepository;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,7 +26,7 @@ class OrderValidator
     /**
      * @throws ApiProblemException
      */
-    public function validateExists(?OrderEntity $order): void
+    public function validateExists(?Order $order): void
     {
         if ($order === null) {
             throw new ApiProblemException(
@@ -53,7 +53,7 @@ class OrderValidator
         }
     }
 
-    public function validateLoadingAddressForCreate(?string $fixedAddressExternalId, ?OrderAddressDto $address): ?FixedAddressEntity
+    public function validateLoadingAddressForCreate(?string $fixedAddressExternalId, ?OrderAddressDto $address): ?FixedAddress
     {
         if ($fixedAddressExternalId === null && $address === null) {
             throw new ApiProblemException(

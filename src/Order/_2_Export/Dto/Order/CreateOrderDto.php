@@ -32,7 +32,7 @@ class CreateOrderDto
     /**
      * @var OrderLineDto[]
      */
-    #[Assert\Valid(groups: ['create'])]
+    #[Assert\Valid]
     public readonly array $lines;
 
     /**

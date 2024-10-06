@@ -11,13 +11,15 @@ use App\Order\_2_Export\Dto\Order\OrderLineDto;
 use App\Order\_2_Export\Enum\OrderStatusEnum;
 use App\Order\_3_Action\Entity\FixedAddress;
 use App\Order\_3_Action\Entity\Order;
+use App\Order\_3_Action\Entity\OrderHeader;
 use App\Order\_3_Action\Entity\OrderLine;
+use App\Order\_3_Action\Validator\FixedAddressValidator;
 use App\Order\_3_Action\Validator\GenericDtoValidator;
 use App\Order\_3_Action\Validator\OrderValidator;
-use App\Order\_4_Infrastructure\Repository\OrderLineRepository;
+use App\Order\_4_Infrastructure\Repository\FixedAddressRepository;
+use App\Order\_4_Infrastructure\Repository\OrderHeaderRepository;
 use App\Order\_4_Infrastructure\Repository\OrderRepository;
 use DateTime;
-use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
@@ -26,12 +28,13 @@ class CreateOrderCmd implements CreateOrderInterface
 {
     public function __construct(
         private readonly OrderRepository $orderRepository,
+        private readonly OrderHeaderRepository $orderHeaderRepository,
         private readonly OrderValidator $orderValidator,
         private readonly LoggerInterface $logger,
         private readonly UserBagInterface $userBag,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly OrderLineRepository $orderLineRepository,
         private readonly GenericDtoValidator $dtoValidator,
+        private readonly FixedAddressRepository $addressRepository,
+        private readonly FixedAddressValidator $addressValidator,
     ) {
     }
 
@@ -45,29 +48,32 @@ class CreateOrderCmd implements CreateOrderInterface
             $this->dtoValidator->validate($dto, 'createOrder');
         }
 
-        $fixedAddress = $this->orderValidator->validateLoadingAddressForCreate($dto->loadingFixedAddressExternalId, $dto->loadingAddress);
-
-        $order = $this->createOrderEntity($dto, $fixedAddress);
-        try {
-            $this->entityManager->beginTransaction();
-            $this->orderRepository->save($order, true);
-
-            $quantity = 0;
-            foreach ($dto->lines as $lineDto) {
-                $line = $this->createOrderLineEntity($lineDto, $order);
-                $quantity += $line->getQuantity();
-                $this->orderLineRepository->save($line);
-            }
-
-            $order->setQuantityTotal($quantity);
-            $this->entityManager->flush();
-            $this->entityManager->commit();
-        } catch (Exception $e) {
-            $this->entityManager->rollback();
-            throw $e;
+        if ($dto->loadingFixedAddressExternalId !== null) {
+            $fixedAddress = $this->addressRepository->findOneBy(
+                ['customerId' => $this->userBag->getCustomerId(), 'externalId' => $dto->loadingFixedAddressExternalId]
+            );
+            $this->addressValidator->validateExists($fixedAddress);
+        } else {
+            $fixedAddress = null;
         }
 
-        $this->logger->info('Created order with id {id} and number {nr}.', ['id' => $order->getId(), 'nr' => $order->getNumber()]);
+        $this->orderValidator->validateLoadingAddressForCreate($fixedAddress, $dto->loadingAddress);
+
+        $orderHeader = $this->createOrderHeader($dto, $fixedAddress);
+
+        $lines = [];
+        $quantity = 0;
+        foreach ($dto->lines as $lineDto) {
+            $line = $this->createOrderLine($lineDto, $orderHeader);
+            $lines[] = $line;
+            $quantity += $line->getQuantity();
+        }
+        $orderHeader->setQuantityTotal($quantity);
+
+        $order = new Order($orderHeader, $lines);
+        $this->orderRepository->storeNew($order);
+
+        $this->logger->info('Created order with id {id} and number {nr}.', ['id' => $order->getId(), 'nr' => $order->getHeader()->getNumber()]);
 
         return $order->getId();
     }
@@ -75,9 +81,9 @@ class CreateOrderCmd implements CreateOrderInterface
     /**
      * @throws Exception
      */
-    private function createOrderEntity(CreateOrderDto $dto, FixedAddress|null $fixedAddress): Order
+    private function createOrderHeader(CreateOrderDto $dto, FixedAddress|null $fixedAddress): OrderHeader
     {
-        $order = new Order();
+        $order = new OrderHeader();
         $order->setCustomerId($this->userBag->getCustomerId());
         $order->setNumber($this->orderNumberGenerator());
         $order->setStatus(OrderStatusEnum::NEW);
@@ -114,17 +120,17 @@ class CreateOrderCmd implements CreateOrderInterface
     {
         do {
             $nr = $this->userBag->getCustomerId() . '/' . date('Ymd') . '/' . rand(1, 9999);
-            $count = $this->orderRepository->count(['customerId' => $this->userBag->getCustomerId(), 'number' => $nr]);
+            $count = $this->orderHeaderRepository->count(['customerId' => $this->userBag->getCustomerId(), 'number' => $nr]);
         } while ($count > 0);
 
         return $nr;
     }
 
-    private function createOrderLineEntity(OrderLineDto $lineDto, Order $order): OrderLine
+    private function createOrderLine(OrderLineDto $lineDto, OrderHeader $orderHeader): OrderLine
     {
         $entity = new OrderLine();
         $entity->setCustomerId($this->userBag->getCustomerId());
-        $entity->setOrder($order);
+        $entity->setOrderHeader($orderHeader);
         $entity->setQuantity($lineDto->quantity);
         $entity->setLength($lineDto->length);
         $entity->setWidth($lineDto->width);

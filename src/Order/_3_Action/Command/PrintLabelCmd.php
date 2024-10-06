@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Order\_3_Action\Command;
 
 use App\Order\_2_Export\Command\PrintLabelInterface;
-use App\Order\_2_Export\Dto\Order\OrderDto;
 use App\Order\_2_Export\Enum\OrderStatusEnum;
-use App\Order\_3_Action\Query\OrderQuery;
+use App\Order\_3_Action\Entity\Order;
+use App\Order\_3_Action\Validator\OrderValidator;
+use App\Order\_4_Infrastructure\Repository\OrderHeaderRepository;
 use App\Order\_4_Infrastructure\Repository\OrderRepository;
 use App\Printer\Export\Dto\AddressDto as PrintAddressDto;
 use App\Printer\Export\Dto\GoodsLineDto as PrintGoodsLineDto;
@@ -21,8 +22,9 @@ class PrintLabelCmd implements PrintLabelInterface
 {
     public function __construct(
         private readonly OrderRepository $orderRepository,
+        private readonly OrderHeaderRepository $orderHeaderRepository,
         private readonly PrintPrintLabel $printLabelCmd,
-        private readonly OrderQuery $orderQuery,
+        private readonly OrderValidator $orderValidator,
     ) {
     }
 
@@ -33,46 +35,47 @@ class PrintLabelCmd implements PrintLabelInterface
      */
     public function printLabel(int $orderId): array
     {
-        $orderDto = $this->orderQuery->getOrder($orderId);
+        $order = $this->orderRepository->get($orderId, true, true);
+        $this->orderValidator->validateExists($order);
+        $this->orderValidator->validateHasAccess($order);
 
-        if ($orderDto->status !== OrderStatusEnum::CONFIRMED) {
+        $label = $this->printLabelCmd->printLabel($this->prepareLabelData($order));
+        $ok = $this->orderHeaderRepository->testAndChangeStatus($orderId, OrderStatusEnum::CONFIRMED, OrderStatusEnum::PRINTED);
+        if ($ok) {
+            return [true, $label];
+        } else {
             return [false, 'ORDER_PRINT_LABEL_STATUS_NOT_VALID_FOR_PRINT'];
         }
-
-        $label = $this->printLabelCmd->printLabel($this->prepareLabelData($orderDto));
-        $this->orderRepository->changeStatus($orderId, OrderStatusEnum::CONFIRMED, OrderStatusEnum::PRINTED);
-
-        return [true, $label];
     }
 
-    private function prepareLabelData(Orderdto $orderDto): PrintLabelDto
+    private function prepareLabelData(Order $order): PrintLabelDto
     {
         $loadingAddress = new PrintAddressDto(
-            substr($orderDto->loadingAddress->nameCompanyOrPerson, 0, 40),
-            substr($orderDto->loadingAddress->address, 0, 40),
-            substr($orderDto->loadingAddress->zipCode, 0, 15),
-            substr($orderDto->loadingAddress->city, 0, 25),
+            substr($order->getHeader()->getLoadingNameCompanyOrPerson(), 0, 40),
+            substr($order->getHeader()->getLoadingAddress(), 0, 40),
+            substr($order->getHeader()->getLoadingZipCode(), 0, 15),
+            substr($order->getHeader()->getLoadingCity(), 0, 25),
         );
 
         $deliveryAddress = new PrintAddressDto(
-            substr($orderDto->deliveryAddress->nameCompanyOrPerson, 0, 40),
-            substr($orderDto->deliveryAddress->address, 0, 40),
-            substr($orderDto->deliveryAddress->zipCode, 0, 15),
-            substr($orderDto->deliveryAddress->city, 0, 25),
+            substr($order->getHeader()->getDeliveryNameCompanyOrPerson(), 0, 40),
+            substr($order->getHeader()->getDeliveryAddress(), 0, 40),
+            substr($order->getHeader()->getDeliveryZipCode(), 0, 15),
+            substr($order->getHeader()->getDeliveryCity(), 0, 25),
         );
 
         $lines = [];
-        foreach ($orderDto->lines as $line) {
+        foreach ($order->getLines() as $line) {
             $lines[] = new PrintGoodsLineDto(
-                substr($line->goodsDescription, 0, 25),
-                $line->quantity,
+                substr($line->getGoodsDescription(), 0, 25),
+                $line->getQuantity(),
             );
         }
 
         $ssccs = [];
-        foreach ($orderDto->ssccs as $item) {
+        foreach ($order->getSsccs() as $item) {
             $ssccs[] = new PrintSsccDto(
-                $item->code,
+                $item->getCode(),
             );
         }
 

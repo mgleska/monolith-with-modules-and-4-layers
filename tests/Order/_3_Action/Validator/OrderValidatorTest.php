@@ -9,14 +9,13 @@ use App\Auth\_2_Export\UserBagInterface;
 use App\Order\_2_Export\Dto\Order\OrderAddressDto;
 use App\Order\_3_Action\Entity\FixedAddress;
 use App\Order\_3_Action\Entity\Order;
+use App\Order\_3_Action\Entity\OrderHeader;
 use App\Order\_3_Action\Validator\OrderValidator;
-use App\Order\_4_Infrastructure\Repository\FixedAddressRepository;
-use App\Order\_4_Infrastructure\Repository\OrderRepository;
+use App\Order\_4_Infrastructure\Repository\OrderHeaderRepository;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use RepositoryMock\RepositoryMockObject;
 use RepositoryMock\RepositoryMockTrait;
 
 class OrderValidatorTest extends TestCase
@@ -25,9 +24,8 @@ class OrderValidatorTest extends TestCase
 
     private OrderValidator $sut;
 
-    private MockObject|OrderRepository $orderRepository;
+    private MockObject|OrderHeaderRepository $orderRepository;
     private MockObject|UserBagInterface $userBag;
-    private RepositoryMockObject|FixedAddressRepository $addressRepository;
 
     private const CUSTOMER_ID = 1;
 
@@ -36,13 +34,12 @@ class OrderValidatorTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->orderRepository = $this->createMock(OrderRepository::class);
+        $this->orderRepository = $this->createMock(OrderHeaderRepository::class);
         $this->userBag = $this->createMock(UserBagInterface::class);
-        $this->addressRepository = $this->createRepositoryMock(FixedAddressRepository::class);
 
         $this->userBag->method('getCustomerId')->willReturn(self::CUSTOMER_ID);
 
-        $this->sut = new OrderValidator($this->orderRepository, $this->userBag, $this->addressRepository);
+        $this->sut = new OrderValidator($this->orderRepository, $this->userBag);
     }
 
     #[Test]
@@ -72,15 +69,15 @@ class OrderValidatorTest extends TestCase
                 'expected' => 'ORDER_ORDER_NOT_FOUND',
             ],
             'valid' => [
-                'order' => new Order(),
+                'order' => new Order(new OrderHeader()),
                 'expected' => '',
             ],
         ];
     }
 
     #[Test]
-    #[DataProvider('dataProviderValidateHasAccess')]
-    public function validateHasAccess(
+    #[DataProvider('dataProviderValidateHasAccessById')]
+    public function validateHasAccessById(
         int $countResult,
         string $expected
     ): void {
@@ -93,13 +90,13 @@ class OrderValidatorTest extends TestCase
             $this->expectNotToPerformAssertions();
         }
 
-        $this->sut->validateHasAccess(1);
+        $this->sut->validateHasAccessById(1);
     }
 
     /**
      * @return array<string, mixed>
      */
-    public static function dataProviderValidateHasAccess(): array
+    public static function dataProviderValidateHasAccessById(): array
     {
         return [
             'no-access' => [
@@ -117,23 +114,18 @@ class OrderValidatorTest extends TestCase
     #[Test]
     #[DataProvider('dataProviderValidateLoadingAddressForCreate')]
     public function validateLoadingAddressForCreate(
-        ?string $fixedAddressExternalId,
+        ?FixedAddress $fixedAddress,
         ?OrderAddressDto $addressDto,
-        ?FixedAddress $expectedAddress,
         string $expectedExceptionMsg
     ): void {
         if ($expectedExceptionMsg) {
             $this->expectException(ApiProblemException::class);
             $this->expectExceptionMessageMatches('/^' . $expectedExceptionMsg . '$/');
+        } else {
+            $this->expectNotToPerformAssertions();
         }
 
-        $this->addressRepository->loadStore([
-            ['id' => 2, 'customerId' => self::CUSTOMER_ID, 'externalId' => 'HQ'],
-        ]);
-
-        $retrievedAddress = $this->sut->validateLoadingAddressForCreate($fixedAddressExternalId, $addressDto);
-
-        $this->assertEquals($expectedAddress, $retrievedAddress);
+        $this->sut->validateLoadingAddressForCreate($fixedAddress, $addressDto);
     }
 
     /**
@@ -144,37 +136,23 @@ class OrderValidatorTest extends TestCase
     {
         return [
             'null-null' => [
-                'fixedAddressExternalId' => null,
+                'fixedAddress' => null,
                 'addressDto' => null,
-                'expectedAddress' => null,
                 'expectedExceptionMsg' => 'ORDER_CREATE_LOADING_ADDRESS_NOT_SPECIFIED',
             ],
             'set-both' => [
-                'fixedAddressExternalId' => 'WH1',
+                'fixedAddress' => new FixedAddress(),
                 'addressDto' => new OrderAddressDto('', '', '', ''),
-                'expectedAddress' => null,
                 'expectedExceptionMsg' => 'ORDER_CREATE_LOADING_ADDRESS_SPECIFIED_BY_EXTERNAL_ID_AND_BY_VALUE',
             ],
             'fixed-address-not-requested' => [
-                'fixedAddressExternalId' => null,
+                'fixedAddress' => null,
                 'addressDto' => new OrderAddressDto('', '', '', ''),
-                'expectedAddress' => null,
                 'expectedExceptionMsg' => '',
             ],
-            'wrong-external-id' => [
-                'fixedAddressExternalId' => 'WH1',
-                'addressDto' => null,
-                'expectedAddress' => null,
-                'expectedExceptionMsg' => 'ORDER_CREATE_LOADING_ADDRESS_NOT_FOUND',
-            ],
             'valid-external-id' => [
-                'fixedAddressExternalId' => 'HQ',
+                'fixedAddress' => new FixedAddress(),
                 'addressDto' => null,
-                'expectedAddress' => self::createFakeObject(FixedAddress::class, [
-                    'id' => 2,
-                    'customerId' => self::CUSTOMER_ID,
-                    'externalId' => 'HQ'
-                ]),
                 'expectedExceptionMsg' => '',
             ],
         ];

@@ -74,52 +74,50 @@ class OrderDto
     }
 
     /**
-     * @param OrderLine[] $lines
-     * @param OrderSscc[] $ssccs
      * @throws Exception
      */
-    public static function fromEntity(Order $entity, array $lines, array $ssccs): self
+    public static function fromEntity(Order $entity): self
     {
         return new self(
             $entity->getId(),
-            $entity->getNumber(),
-            $entity->getStatus(),
-            $entity->getQuantityTotal(),
-            new DateVO($entity->getLoadingDate()),
-            $entity->getLoadingFixedAddressExternalId(),
+            $entity->getHeader()->getNumber(),
+            $entity->getHeader()->getStatus(),
+            $entity->getHeader()->getQuantityTotal(),
+            new DateVO($entity->getHeader()->getLoadingDate()),
+            $entity->getHeader()->getLoadingFixedAddressExternalId(),
             new OrderAddressDto(
-                $entity->getLoadingNameCompanyOrPerson(),
-                $entity->getLoadingAddress(),
-                $entity->getLoadingCity(),
-                $entity->getLoadingZipCode(),
+                $entity->getHeader()->getLoadingNameCompanyOrPerson(),
+                $entity->getHeader()->getLoadingAddress(),
+                $entity->getHeader()->getLoadingCity(),
+                $entity->getHeader()->getLoadingZipCode(),
             ),
             new OrderAddressContactDto(
-                $entity->getLoadingContactPerson(),
-                $entity->getLoadingContactPhone(),
-                $entity->getLoadingContactEmail(),
+                $entity->getHeader()->getLoadingContactPerson(),
+                $entity->getHeader()->getLoadingContactPhone(),
+                $entity->getHeader()->getLoadingContactEmail(),
             ),
             new OrderAddressDto(
-                $entity->getDeliveryNameCompanyOrPerson(),
-                $entity->getDeliveryAddress(),
-                $entity->getDeliveryCity(),
-                $entity->getDeliveryZipCode(),
+                $entity->getHeader()->getDeliveryNameCompanyOrPerson(),
+                $entity->getHeader()->getDeliveryAddress(),
+                $entity->getHeader()->getDeliveryCity(),
+                $entity->getHeader()->getDeliveryZipCode(),
             ),
             new OrderAddressContactDto(
-                $entity->getDeliveryContactPerson(),
-                $entity->getDeliveryContactPhone(),
-                $entity->getDeliveryContactEmail(),
+                $entity->getHeader()->getDeliveryContactPerson(),
+                $entity->getHeader()->getDeliveryContactPhone(),
+                $entity->getHeader()->getDeliveryContactEmail(),
             ),
             array_map(
                 function (OrderLine $line) {
                     return OrderLineDto::fromEntity($line);
                 },
-                $lines
+                $entity->getLines()
             ),
             array_map(
                 function (OrderSscc $sscc) {
                     return OrderSsccDto::fromEntity($sscc);
                 },
-                $ssccs
+                $entity->getSsccs()
             )
         );
     }

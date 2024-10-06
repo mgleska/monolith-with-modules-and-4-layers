@@ -21,7 +21,7 @@ class OrderLine
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: 'order_id', referencedColumnName: 'id', nullable: false)]
-    private Order $order;
+    private OrderHeader $orderHeader;
 
     #[ORM\Column]
     private int $quantity;
@@ -66,14 +66,14 @@ class OrderLine
         return $this;
     }
 
-    public function getOrder(): Order
+    public function getOrderHeader(): OrderHeader
     {
-        return $this->order;
+        return $this->orderHeader;
     }
 
-    public function setOrder(Order $order): static
+    public function setOrderHeader(OrderHeader $orderHeader): static
     {
-        $this->order = $order;
+        $this->orderHeader = $orderHeader;
         return $this;
     }
 

@@ -12,11 +12,12 @@ use App\Order\_2_Export\Dto\Order\OrderLineDto;
 use App\Order\_2_Export\Enum\OrderStatusEnum;
 use App\Order\_3_Action\Command\CreateOrderCmd;
 use App\Order\_3_Action\Entity\FixedAddress;
-use App\Order\_3_Action\Entity\Order;
+use App\Order\_3_Action\Entity\OrderHeader;
 use App\Order\_3_Action\Entity\OrderLine;
 use App\Order\_3_Action\Validator\GenericDtoValidator;
 use App\Order\_3_Action\Validator\OrderValidator;
 use App\Order\_4_Infrastructure\Repository\OrderLineRepository;
+use App\Order\_4_Infrastructure\Repository\OrderHeaderRepository;
 use App\Order\_4_Infrastructure\Repository\OrderRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,20 +30,17 @@ use Psr\Log\LoggerInterface;
 use RepositoryMock\RepositoryMockObject;
 use RepositoryMock\RepositoryMockTrait;
 
-use function count;
-
 class CreateOrderCmdTest extends TestCase
 {
     use RepositoryMockTrait;
 
     private CreateOrderCmd $sut;
 
-    private RepositoryMockObject|OrderRepository $orderRepository;
+    private MockObject|OrderRepository $orderRepository;
+    private RepositoryMockObject|OrderHeaderRepository $orderHeaderRepository;
     private MockObject|OrderValidator $validator;
     private MockObject|LoggerInterface $logger;
     private MockObject|UserBagInterface $userBag;
-    private MockObject|EntityManagerInterface $entityManager;
-    private RepositoryMockObject|OrderLineRepository $orderLineRepository;
     private MockObject|GenericDtoValidator $dtoValidator;
 
     private const CUSTOMER_ID = 11;
@@ -52,7 +50,7 @@ class CreateOrderCmdTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->orderRepository = $this->createRepositoryMock(OrderRepository::class);
+        $this->orderHeaderRepository = $this->createRepositoryMock(OrderHeaderRepository::class);
         $this->validator = $this->createMock(OrderValidator::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->userBag = $this->createMock(UserBagInterface::class);
@@ -64,11 +62,10 @@ class CreateOrderCmdTest extends TestCase
 
         $this->sut = new CreateOrderCmd(
             $this->orderRepository,
+            $this->orderHeaderRepository,
             $this->validator,
             $this->logger,
             $this->userBag,
-            $this->entityManager,
-            $this->orderLineRepository,
             $this->dtoValidator,
         );
     }
@@ -103,7 +100,7 @@ class CreateOrderCmdTest extends TestCase
         $this->entityManager->expects(self::once())->method('commit');
         $this->logger->expects(self::once())->method('info');
 
-        $this->orderRepository->loadStore([['id' => 4]]);
+        $this->orderHeaderRepository->loadStore([['id' => 4]]);
 
         $this->validator->method('validateLoadingAddressForCreate')->willReturn($validatorResponse);
 
@@ -111,8 +108,8 @@ class CreateOrderCmdTest extends TestCase
 
         $this->assertSame($expectedId, $result);
 
-        $dbOrder = $this->orderRepository->getStoreContent();
-        /** @var Order $order */
+        $dbOrder = $this->orderHeaderRepository->getStoreContent();
+        /** @var OrderHeader $order */
         $order = $dbOrder[$expectedId];
         $this->assertSame($expectedId, $order->getId());
         $this->assertSame($expectedOrder['customerId'], $order->getCustomerId());
@@ -141,7 +138,7 @@ class CreateOrderCmdTest extends TestCase
         /** @var OrderLine $orderLineEntity */
         foreach ($dbOrderLine as $orderLineEntity) {
             $this->assertSame(self::CUSTOMER_ID, $orderLineEntity->getCustomerId());
-            $this->assertSame($expectedId, $orderLineEntity->getOrder()->getId());
+            $this->assertSame($expectedId, $orderLineEntity->getOrderHeader()->getId());
             $this->assertTrue(
                 $this->isMatchingOrderLine($orderLineEntity, $expectedLines),
                 sprintf(

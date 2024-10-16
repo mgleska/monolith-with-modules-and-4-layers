@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Customer\_4_Infrastructure\Repository;
 
-use App\Customer\_4_Infrastructure\Entity\CustomerEntity;
+use App\Customer\_3_Action\Entity\Customer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<CustomerEntity>
+ * @extends ServiceEntityRepository<Customer>
  */
 class CustomerRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, CustomerEntity::class);
+        parent::__construct($registry, Customer::class);
     }
 
     //    /**

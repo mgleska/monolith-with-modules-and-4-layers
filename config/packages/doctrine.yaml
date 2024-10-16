@@ -25,20 +25,20 @@ doctrine:
             Auth:
                 type: attribute
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Auth/_4_Infrastructure/Entity'
-                prefix: 'App\Auth\_4_Infrastructure\Entity'
+                dir: '%kernel.project_dir%/src/Auth/_3_Action/Entity'
+                prefix: 'App\Auth\_3_Action\Entity'
                 alias: Auth
             Customer:
                 type: attribute
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Customer/_4_Infrastructure/Entity'
-                prefix: 'App\Customer\_4_Infrastructure\Entity'
+                dir: '%kernel.project_dir%/src/Customer/_3_Action/Entity'
+                prefix: 'App\Customer\_3_Action\Entity'
                 alias: Customer
             Order:
                 type: attribute
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Order/_4_Infrastructure/Entity'
-                prefix: 'App\Order\_4_Infrastructure\Entity'
+                dir: '%kernel.project_dir%/src/Order/_3_Action/Entity'
+                prefix: 'App\Order\_3_Action\Entity'
                 alias: Order
         controller_resolver:
             auto_mapping: true

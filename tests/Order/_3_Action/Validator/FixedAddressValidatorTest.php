@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace App\Tests\Order\_3_Action\Validator;
 
 use App\Api\_2_Export\ApiProblemException;
+use App\Order\_3_Action\Entity\FixedAddress;
 use App\Order\_3_Action\Validator\FixedAddressValidator;
-use App\Order\_4_Infrastructure\Entity\FixedAddressEntity;
 use App\Order\_4_Infrastructure\Repository\FixedAddressRepository;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -36,7 +36,7 @@ class FixedAddressValidatorTest extends TestCase
     #[Test]
     #[DataProvider('dataProviderValidateExists')]
     public function validateExists(
-        ?FixedAddressEntity $address,
+        ?FixedAddress $address,
         string $expected
     ): void {
         if ($expected) {
@@ -60,7 +60,7 @@ class FixedAddressValidatorTest extends TestCase
                 'expected' => 'ORDER_FIXEDADDRESS_NOT_FOUND',
             ],
             'valid' => [
-                'address' => new FixedAddressEntity(),
+                'address' => new FixedAddress(),
                 'expected' => '',
             ],
         ];

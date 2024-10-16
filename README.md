@@ -12,7 +12,7 @@
 
 1. Application built using the Symfony framework.
 2. Using Symfony Serializer and Symfony Validator to process input data received by the API.
-3. Using Symfony Security. It allows relatively simple use ready-made solutions for connecting to various identity providers (e.g. OAuth2, SAML).
+3. Using Symfony Security. It allows relatively simple use of ready-made solutions for connecting to various identity providers (e.g. OAuth2, SAML).
 4. One database, logically divided into modules, for many clients (multi tenant), with a distinguished parent client (he may have access to other clients' data).
 5. Zero CRUD, zero PUT/PATCH/DELETE.
 6. Using ready-made solutions to create API documentation based on data structures prepared for the Serializer and constraints needed for the Validator.
@@ -28,7 +28,7 @@
 * Each module implements set of domain actions.
 * Some of the implemented actions are exported.
 * Only exported actions can be used by other modules or by "external world" (by API/CLI/Message/Event/direct call).
-* Each module holds its own set of data in storage (e.g. database). Only module has direct access to its data.
+* Each module holds its own set of data in storage (e.g. database). Only the module has direct access to its data.
 * Other modules and "external world" can access and manipulate module's data only by calling actions exported by module.
 
 
@@ -50,7 +50,7 @@ General rule for layer 1:Connector is, that component from this layer can **use*
 * classes and objects from framework and `vendors/*`.
 
 Usually there is no need to define connector for external call from other module in the application.\
-The reason is simple - other module can **use** action definition form layer 2:Export of given module and supply input data in form (value with PHP built-in type, DTO, Value Object) required by the action.
+The reason is simple - other module can **use** action definition form layer 2:Export of given module and supply input data in form required by the action (as: value with PHP built-in type, DTO, Value Object).
 
 
 ### Layer 2:Export
@@ -67,7 +67,7 @@ Exposed artifacts could be:
 It is important to note, that 2:Export layer **defines** but **not implement** actions.
 
 General rule for layer 2:Export is, that component from this layer can **use** only:
-* actions and structures defined in own layer,
+* interfaces and structures defined in own layer,
 * structures defined at layers 3 and 4 with restriction, that used structures are not exposed to "external world"
 * classes and objects from framework and `vendors/*`.
 
@@ -76,7 +76,7 @@ General rule for layer 2:Export is, that component from this layer can **use** o
 
 **It is the most important layer in 4-layers Architecture.**
 
-In layer 3:Action module implements **domain actions** which are core responsibility of the module.
+In layer 3:Action module implements **domain actions** which are core responsibility of the module and **domain models** owned by the module.
 
 Each action covers part of business domain and holds (encapsulates) business rules specific for given action.
 
@@ -95,6 +95,11 @@ Similarly for query - CQRS requires, that each query produce a data as **model s
 Good practice is to implement action as one class, with one public method and private supplementary methods.\
 If it is required, action can **use** any supplementary methods and structures defined at layers 2-4 of given module and layer 2 of any other module.
 
+Second core responsibility of layer 3:Action is to define and maintain domain models - entities and aggregates.
+
+An important feature of the **4-layers Architecture** is, that **other modules do not have direct access to models** of given module.\
+It gives us high level of isolation and prevents data which belongs to given module from direct manipulation by other modules.
+
 General rule for layer 3:Action is, that component from this layer can **use**:
 * methods and structures defined at layers 2-4 in given module,
 * actions and structures exported (defined at layer 2:Export) by other modules,
@@ -105,13 +110,9 @@ General rule for layer 3:Action is, that component from this layer can **use**:
 
 Layer 4:Infrastructure is a place, where module defines and implements classes, methods and structures used to perform common supplementary services required by domain actions from layer 3:Action.
 
-Good example of such supplementary service is database access and manipulation implemented by classes `Entity` and `Repository`.\
-Class `Entity` defines fields and relations of corresponding database table.\
-Class `Repository` implements general access methods (e.g. `find()`, `findBy()`) and also methods specific for corresponding `Entity` (e.g. `changeStatus()`, `getStatus()`).\
-It is worth to note, that `Entity` class name do not match 1-to-1 name of table in database. For example class `OrderEntity` is mapped to table `ord_order`. This approach allow to group tables of the module by common prefix (`ord_` in this example).
-
-An important feature of the **4-layers Architecture** is, that **other modules do not have direct access to the `Entity` class** of given module.\
-It gives us high level of isolation and prevents data which belongs to given module from direct manipulation by other modules.
+Good example of such supplementary service is database access and manipulation implemented by class `Repository`.\
+`Repository` implements general access methods (e.g. `find()`, `findBy()`) and also methods specific for corresponding `Entity` (e.g. `changeStatus()`, `getStatus()`).\
+It is worth to note, that `Entity` class name do not match 1-to-1 name of table in database. For example class `Order` is mapped to table `ord_order`. This approach allow to group tables of the module by common prefix (`ord_` in this example).
 
 General rule for layer 4:Infrastructure is, that component from this layer can **use** only:
 * actions and structures defined at own layer,

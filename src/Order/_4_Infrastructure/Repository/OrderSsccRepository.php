@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace App\Order\_4_Infrastructure\Repository;
 
-use App\Order\_4_Infrastructure\Entity\OrderSsccEntity;
+use App\Order\_3_Action\Entity\OrderSscc;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<OrderSsccEntity>
+ * @extends ServiceEntityRepository<OrderSscc>
  */
 class OrderSsccRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, OrderSsccEntity::class);
+        parent::__construct($registry, OrderSscc::class);
     }
 
-    public function save(OrderSsccEntity $entity, bool $flush = false): void
+    public function save(OrderSscc $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 

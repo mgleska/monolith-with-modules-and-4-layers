@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Order\_2_Export\Dto\Order;
 
-use App\Order\_4_Infrastructure\Entity\OrderLineEntity;
+use App\Order\_3_Action\Entity\OrderLine;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -58,7 +58,7 @@ class OrderLineDto
         $this->goodsDescription = $goodsDescription;
     }
 
-    public static function fromEntity(OrderLineEntity $entity): self
+    public static function fromEntity(OrderLine $entity): self
     {
         return new self(
             $entity->getId(),

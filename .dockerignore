@@ -8,5 +8,4 @@
 /.env.local.php
 /.env.*.local
 
-/.phpcs-cache
-/.phpunit.result.cache
+/compose.override.yaml

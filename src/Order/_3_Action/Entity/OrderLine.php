@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Order\_4_Infrastructure\Entity;
+namespace App\Order\_3_Action\Entity;
 
 use App\Order\_4_Infrastructure\Repository\OrderLineRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrderLineRepository::class)]
 #[ORM\Table(name: "ord_order_line")]
-class OrderLineEntity
+class OrderLine
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -21,7 +21,7 @@ class OrderLineEntity
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: 'order_id', referencedColumnName: 'id', nullable: false)]
-    private OrderEntity $order;
+    private OrderHeader $orderHeader;
 
     #[ORM\Column]
     private int $quantity;
@@ -66,14 +66,14 @@ class OrderLineEntity
         return $this;
     }
 
-    public function getOrder(): OrderEntity
+    public function getOrderHeader(): OrderHeader
     {
-        return $this->order;
+        return $this->orderHeader;
     }
 
-    public function setOrder(OrderEntity $order): OrderLineEntity
+    public function setOrderHeader(OrderHeader $orderHeader): static
     {
-        $this->order = $order;
+        $this->orderHeader = $orderHeader;
         return $this;
     }
 
@@ -82,7 +82,7 @@ class OrderLineEntity
         return $this->quantity;
     }
 
-    public function setQuantity(int $quantity): OrderLineEntity
+    public function setQuantity(int $quantity): static
     {
         $this->quantity = $quantity;
         return $this;
@@ -93,7 +93,7 @@ class OrderLineEntity
         return $this->length;
     }
 
-    public function setLength(int $length): OrderLineEntity
+    public function setLength(int $length): static
     {
         $this->length = $length;
         return $this;
@@ -104,7 +104,7 @@ class OrderLineEntity
         return $this->width;
     }
 
-    public function setWidth(int $width): OrderLineEntity
+    public function setWidth(int $width): static
     {
         $this->width = $width;
         return $this;
@@ -115,7 +115,7 @@ class OrderLineEntity
         return $this->height;
     }
 
-    public function setHeight(int $height): OrderLineEntity
+    public function setHeight(int $height): static
     {
         $this->height = $height;
         return $this;
@@ -126,7 +126,7 @@ class OrderLineEntity
         return $this->weightOnePallet;
     }
 
-    public function setWeightOnePallet(int $weightOnePallet): OrderLineEntity
+    public function setWeightOnePallet(int $weightOnePallet): static
     {
         $this->weightOnePallet = $weightOnePallet;
         return $this;
@@ -137,7 +137,7 @@ class OrderLineEntity
         return $this->weightTotal;
     }
 
-    public function setWeightTotal(int $weightTotal): OrderLineEntity
+    public function setWeightTotal(int $weightTotal): static
     {
         $this->weightTotal = $weightTotal;
         return $this;
@@ -148,7 +148,7 @@ class OrderLineEntity
         return $this->goodsDescription;
     }
 
-    public function setGoodsDescription(string $goodsDescription): OrderLineEntity
+    public function setGoodsDescription(string $goodsDescription): static
     {
         $this->goodsDescription = $goodsDescription;
         return $this;

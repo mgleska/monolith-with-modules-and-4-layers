@@ -4,55 +4,56 @@ declare(strict_types=1);
 
 namespace App\Order\_4_Infrastructure\Repository;
 
-use App\Order\_2_Export\Enum\OrderStatusEnum;
-use App\Order\_4_Infrastructure\Entity\OrderEntity;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\DBAL\Exception as DBALException;
-use Doctrine\Persistence\ManagerRegistry;
+use App\Order\_3_Action\Entity\Order;
+use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 
-/**
- * @extends ServiceEntityRepository<OrderEntity>
- */
-class OrderRepository extends ServiceEntityRepository
+class OrderRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, OrderEntity::class);
-    }
-
-    public function save(OrderEntity $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly OrderHeaderRepository $headerRepository,
+        private readonly OrderLineRepository $lineRepository,
+        private readonly OrderSsccRepository $ssccRepository,
+    ) {
     }
 
     /**
-     * @throws DBALException
+     * @throws Exception
      */
-    public function changeStatus(int $orderId, OrderStatusEnum $fromStatus, OrderStatusEnum $toStatus): bool
+    public function storeNew(Order $order): void
     {
-        $conn = $this->getEntityManager()->getConnection();
-        $sql = '
-            UPDATE ord_order SET status = :toStatus
-            WHERE id = :orderId
-            AND status = :fromStatus
-        ';
-        $countUpdated = $conn->executeStatement($sql, ['orderId' => $orderId, 'fromStatus' => $fromStatus->value, 'toStatus' => $toStatus->value]);
+        try {
+            $this->entityManager->beginTransaction();
+            $this->headerRepository->save($order->getHeader(), true);
 
-        return $countUpdated > 0;
+            foreach ($order->getLines() as $line) {
+                $this->lineRepository->save($line);
+            }
+
+            $this->entityManager->flush();
+            $this->entityManager->commit();
+        } catch (Exception $e) {
+            $this->entityManager->rollback();
+            throw $e;
+        }
     }
 
-    public function getStatus(int $orderId): OrderStatusEnum
+    public function get(int $id, bool $withLines = false, bool $withSsccs = false): ?Order
     {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->select('o.status')
-            ->from(OrderEntity::class, 'o')
-            ->where('o.id = :orderId')
-            ->setParameter('orderId', $orderId);
+        $header = $this->headerRepository->find($id);
+        if ($header === null) {
+            return null;
+        }
 
-        return OrderStatusEnum::from($qb->getQuery()->getSingleScalarResult());
+        if ($withLines) {
+            $lines = $this->lineRepository->findBy(['orderHeader' => $header]);
+        }
+
+        if ($withSsccs) {
+            $ssccs = $this->ssccRepository->findBy(['orderHeader' => $header]);
+        }
+
+        return new Order($header, $lines ?? [], $ssccs ?? []);
     }
 }

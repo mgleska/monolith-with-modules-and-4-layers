@@ -7,26 +7,24 @@ namespace App\Order\_3_Action\Validator;
 use App\Api\_2_Export\ApiProblemException;
 use App\Auth\_2_Export\UserBagInterface;
 use App\Order\_2_Export\Dto\Order\OrderAddressDto;
+use App\Order\_3_Action\Entity\FixedAddress;
+use App\Order\_3_Action\Entity\Order;
 use App\Order\_3_Action\Enum\ApiProblemTypeEnum;
-use App\Order\_4_Infrastructure\Entity\FixedAddressEntity;
-use App\Order\_4_Infrastructure\Entity\OrderEntity;
-use App\Order\_4_Infrastructure\Repository\FixedAddressRepository;
-use App\Order\_4_Infrastructure\Repository\OrderRepository;
+use App\Order\_4_Infrastructure\Repository\OrderHeaderRepository;
 use Symfony\Component\HttpFoundation\Response;
 
 class OrderValidator
 {
     public function __construct(
-        private readonly OrderRepository $orderRepository,
+        private readonly OrderHeaderRepository $orderHeaderRepository,
         private readonly UserBagInterface $userBag,
-        private readonly FixedAddressRepository $addressRepository,
     ) {
     }
 
     /**
      * @throws ApiProblemException
      */
-    public function validateExists(?OrderEntity $order): void
+    public function validateExists(?Order $order): void
     {
         if ($order === null) {
             throw new ApiProblemException(
@@ -37,12 +35,23 @@ class OrderValidator
         }
     }
 
+    public function validateHasAccess(Order $order): void
+    {
+        if ($order->getHeader()->getCustomerId() !== $this->userBag->getCustomerId()) {
+            throw new ApiProblemException(
+                Response::HTTP_FORBIDDEN,
+                ApiProblemTypeEnum::VALIDATOR->value,
+                'ORDER_ORDER_NO_ACCESS'
+            );
+        }
+    }
+
     /**
      * @throws ApiProblemException
      */
-    public function validateHasAccess(int $orderId): void
+    public function validateHasAccessById(int $orderId): void
     {
-        $c = $this->orderRepository->count(['id' => $orderId, 'customerId' => $this->userBag->getCustomerId()]);
+        $c = $this->orderHeaderRepository->count(['id' => $orderId, 'customerId' => $this->userBag->getCustomerId()]);
 
         if ($c === 0) {
             throw new ApiProblemException(
@@ -53,9 +62,9 @@ class OrderValidator
         }
     }
 
-    public function validateLoadingAddressForCreate(?string $fixedAddressExternalId, ?OrderAddressDto $address): ?FixedAddressEntity
+    public function validateLoadingAddressForCreate(?FixedAddress $fixedAddress, ?OrderAddressDto $address): void
     {
-        if ($fixedAddressExternalId === null && $address === null) {
+        if ($fixedAddress === null && $address === null) {
             throw new ApiProblemException(
                 Response::HTTP_UNPROCESSABLE_ENTITY,
                 ApiProblemTypeEnum::CREATE->value,
@@ -63,28 +72,12 @@ class OrderValidator
             );
         }
 
-        if ($fixedAddressExternalId !== null && $address !== null) {
+        if ($fixedAddress !== null && $address !== null) {
             throw new ApiProblemException(
                 Response::HTTP_UNPROCESSABLE_ENTITY,
                 ApiProblemTypeEnum::CREATE->value,
                 'ORDER_CREATE_LOADING_ADDRESS_SPECIFIED_BY_EXTERNAL_ID_AND_BY_VALUE'
             );
         }
-
-        if ($fixedAddressExternalId !== null) {
-            $address = $this->addressRepository->findOneBy(
-                ['customerId' => $this->userBag->getCustomerId(), 'externalId' => $fixedAddressExternalId]
-            );
-            if ($address !== null) {
-                return $address;
-            }
-            throw new ApiProblemException(
-                Response::HTTP_UNPROCESSABLE_ENTITY,
-                ApiProblemTypeEnum::CREATE->value,
-                'ORDER_CREATE_LOADING_ADDRESS_NOT_FOUND'
-            );
-        }
-
-        return null;
     }
 }

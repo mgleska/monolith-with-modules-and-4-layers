@@ -11,39 +11,38 @@ use App\Order\_2_Export\Dto\Order\OrderAddressDto;
 use App\Order\_2_Export\Dto\Order\OrderLineDto;
 use App\Order\_2_Export\Enum\OrderStatusEnum;
 use App\Order\_3_Action\Command\CreateOrderCmd;
+use App\Order\_3_Action\Entity\FixedAddress;
+use App\Order\_3_Action\Entity\Order;
+use App\Order\_3_Action\Entity\OrderHeader;
+use App\Order\_3_Action\Entity\OrderLine;
+use App\Order\_3_Action\Validator\FixedAddressValidator;
 use App\Order\_3_Action\Validator\GenericDtoValidator;
 use App\Order\_3_Action\Validator\OrderValidator;
-use App\Order\_4_Infrastructure\Entity\FixedAddressEntity;
-use App\Order\_4_Infrastructure\Entity\OrderEntity;
-use App\Order\_4_Infrastructure\Entity\OrderLineEntity;
-use App\Order\_4_Infrastructure\Repository\OrderLineRepository;
+use App\Order\_4_Infrastructure\Repository\FixedAddressRepository;
+use App\Order\_4_Infrastructure\Repository\OrderHeaderRepository;
 use App\Order\_4_Infrastructure\Repository\OrderRepository;
+use App\Tests\AutoincrementIdTrait;
 use DateTime;
-use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use RepositoryMock\RepositoryMockObject;
 use RepositoryMock\RepositoryMockTrait;
-
-use function count;
 
 class CreateOrderCmdTest extends TestCase
 {
     use RepositoryMockTrait;
+    use AutoincrementIdTrait;
 
     private CreateOrderCmd $sut;
 
-    private RepositoryMockObject|OrderRepository $orderRepository;
+    private MockObject|OrderRepository $orderRepository;
+    private MockObject|OrderHeaderRepository $orderHeaderRepository;
     private MockObject|OrderValidator $validator;
     private MockObject|LoggerInterface $logger;
     private MockObject|UserBagInterface $userBag;
-    private MockObject|EntityManagerInterface $entityManager;
-    private RepositoryMockObject|OrderLineRepository $orderLineRepository;
-    private MockObject|GenericDtoValidator $dtoValidator;
+    private MockObject|FixedAddressRepository $addressRepository;
 
     private const CUSTOMER_ID = 11;
 
@@ -52,30 +51,31 @@ class CreateOrderCmdTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->orderRepository = $this->createRepositoryMock(OrderRepository::class);
+        $this->orderRepository = $this->createMock(OrderRepository::class);
+        $this->orderHeaderRepository = $this->createMock(OrderHeaderRepository::class);
         $this->validator = $this->createMock(OrderValidator::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->userBag = $this->createMock(UserBagInterface::class);
-        $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->orderLineRepository = $this->createRepositoryMock(OrderLineRepository::class);
-        $this->dtoValidator = $this->createMock(GenericDtoValidator::class);
+        $this->addressRepository = $this->createMock(FixedAddressRepository::class);
 
         $this->userBag->method('getCustomerId')->willReturn(self::CUSTOMER_ID);
+        self::setAutoincrementIdForClass(OrderHeader::class, 5);
 
         $this->sut = new CreateOrderCmd(
             $this->orderRepository,
+            $this->orderHeaderRepository,
             $this->validator,
             $this->logger,
             $this->userBag,
-            $this->entityManager,
-            $this->orderLineRepository,
-            $this->dtoValidator,
+            $this->createMock(GenericDtoValidator::class),
+            $this->addressRepository,
+            $this->createMock(FixedAddressValidator::class)
         );
     }
 
     /**
      * @param array<string, mixed> $dtoData
-     * @param array<string, mixed> $expectedOrder
+     * @param array<string, mixed> $expectedHeader
      * @param array<int, array<string, mixed>> $expectedLines
      *
      * @noinspection PhpUnhandledExceptionInspection
@@ -84,9 +84,9 @@ class CreateOrderCmdTest extends TestCase
     #[DataProvider('dataProviderCreateOrder')]
     public function createOrder(
         array $dtoData,
-        ?FixedAddressEntity $validatorResponse,
+        ?FixedAddress $fixedAddress,
         int $expectedId,
-        array $expectedOrder,
+        array $expectedHeader,
         array $expectedLines
     ): void {
         $dtoData['loadingAddress'] = $dtoData['loadingAddress'] ? new OrderAddressDto(...$dtoData['loadingAddress']) : null;
@@ -100,54 +100,58 @@ class CreateOrderCmdTest extends TestCase
         $dtoData['lines'] = $lines;
         $dto = new CreateOrderDto(...$dtoData);
 
-        $this->entityManager->expects(self::once())->method('commit');
         $this->logger->expects(self::once())->method('info');
 
-        $this->orderRepository->loadStore([['id' => 4]]);
+        $this->addressRepository->method('findOneBy')->willReturn($fixedAddress);
 
-        $this->validator->method('validateLoadingAddressForCreate')->willReturn($validatorResponse);
+        $storedOrder = null;
+        $this->orderRepository->method('storeNew')->willReturnCallback(
+            function (Order $order) use (&$storedOrder) {
+                self::setAutoincrementId($order->getHeader());
+                foreach ($order->getLines() as $line) {
+                    self::setAutoincrementId($line);
+                }
+                $storedOrder = unserialize(serialize($order));
+            }
+        );
 
         $result = $this->sut->createOrder($dto);
 
         $this->assertSame($expectedId, $result);
 
-        $dbOrder = $this->orderRepository->getStoreContent();
-        /** @var OrderEntity $order */
-        $order = $dbOrder[$expectedId];
-        $this->assertSame($expectedId, $order->getId());
-        $this->assertSame($expectedOrder['customerId'], $order->getCustomerId());
-        $this->assertMatchesRegularExpression($expectedOrder['number'], $order->getNumber());
-        $this->assertSame($expectedOrder['status'], $order->getStatus());
-        $this->assertSame($expectedOrder['quantityTotal'], $order->getQuantityTotal());
-        $this->assertEquals(new DateTime($expectedOrder['loadingDate']), $order->getLoadingDate());
-        $this->assertSame($expectedOrder['loadingNameCompanyOrPerson'], $order->getLoadingNameCompanyOrPerson());
-        $this->assertSame($expectedOrder['loadingAddress'], $order->getLoadingAddress());
-        $this->assertSame($expectedOrder['loadingCity'], $order->getLoadingCity());
-        $this->assertSame($expectedOrder['loadingZipCode'], $order->getLoadingZipCode());
-        $this->assertSame($expectedOrder['loadingContactPerson'], $order->getLoadingContactPerson());
-        $this->assertSame($expectedOrder['loadingContactPhone'], $order->getLoadingContactPhone());
-        $this->assertSame($expectedOrder['loadingContactEmail'], $order->getLoadingContactEmail());
-        $this->assertSame($expectedOrder['loadingFixedAddressExternalId'], $order->getLoadingFixedAddressExternalId());
-        $this->assertSame($expectedOrder['deliveryNameCompanyOrPerson'], $order->getDeliveryNameCompanyOrPerson());
-        $this->assertSame($expectedOrder['deliveryAddress'], $order->getDeliveryAddress());
-        $this->assertSame($expectedOrder['deliveryCity'], $order->getDeliveryCity());
-        $this->assertSame($expectedOrder['deliveryZipCode'], $order->getDeliveryZipCode());
-        $this->assertSame($expectedOrder['deliveryContactPerson'], $order->getDeliveryContactPerson());
-        $this->assertSame($expectedOrder['deliveryContactPhone'], $order->getDeliveryContactPhone());
-        $this->assertSame($expectedOrder['deliveryContactEmail'], $order->getDeliveryContactEmail());
+        $storedOrderHader = $storedOrder->getHeader();
+        $this->assertSame($expectedId, $storedOrder->getId());
+        $this->assertSame($expectedHeader['customerId'], $storedOrderHader->getCustomerId());
+        $this->assertMatchesRegularExpression($expectedHeader['number'], $storedOrderHader->getNumber());
+        $this->assertSame($expectedHeader['status'], $storedOrderHader->getStatus());
+        $this->assertSame($expectedHeader['quantityTotal'], $storedOrderHader->getQuantityTotal());
+        $this->assertEquals(new DateTime($expectedHeader['loadingDate']), $storedOrderHader->getLoadingDate());
+        $this->assertSame($expectedHeader['loadingNameCompanyOrPerson'], $storedOrderHader->getLoadingNameCompanyOrPerson());
+        $this->assertSame($expectedHeader['loadingAddress'], $storedOrderHader->getLoadingAddress());
+        $this->assertSame($expectedHeader['loadingCity'], $storedOrderHader->getLoadingCity());
+        $this->assertSame($expectedHeader['loadingZipCode'], $storedOrderHader->getLoadingZipCode());
+        $this->assertSame($expectedHeader['loadingContactPerson'], $storedOrderHader->getLoadingContactPerson());
+        $this->assertSame($expectedHeader['loadingContactPhone'], $storedOrderHader->getLoadingContactPhone());
+        $this->assertSame($expectedHeader['loadingContactEmail'], $storedOrderHader->getLoadingContactEmail());
+        $this->assertSame($expectedHeader['loadingFixedAddressExternalId'], $storedOrderHader->getLoadingFixedAddressExternalId());
+        $this->assertSame($expectedHeader['deliveryNameCompanyOrPerson'], $storedOrderHader->getDeliveryNameCompanyOrPerson());
+        $this->assertSame($expectedHeader['deliveryAddress'], $storedOrderHader->getDeliveryAddress());
+        $this->assertSame($expectedHeader['deliveryCity'], $storedOrderHader->getDeliveryCity());
+        $this->assertSame($expectedHeader['deliveryZipCode'], $storedOrderHader->getDeliveryZipCode());
+        $this->assertSame($expectedHeader['deliveryContactPerson'], $storedOrderHader->getDeliveryContactPerson());
+        $this->assertSame($expectedHeader['deliveryContactPhone'], $storedOrderHader->getDeliveryContactPhone());
+        $this->assertSame($expectedHeader['deliveryContactEmail'], $storedOrderHader->getDeliveryContactEmail());
 
-        $dbOrderLine = $this->orderLineRepository->getStoreContent();
-        $this->assertSame(count($expectedLines), count($dbOrderLine));
-        /** @var OrderLineEntity $orderLineEntity */
-        foreach ($dbOrderLine as $orderLineEntity) {
-            $this->assertSame(self::CUSTOMER_ID, $orderLineEntity->getCustomerId());
-            $this->assertSame($expectedId, $orderLineEntity->getOrder()->getId());
+        $this->assertSame(count($expectedLines), count($storedOrder->getLines()));
+        foreach ($storedOrder->getLines() as $orderLine) {
+            $this->assertSame(self::CUSTOMER_ID, $orderLine->getCustomerId());
+            $this->assertSame($expectedId, $orderLine->getOrderHeader()->getId());
             $this->assertTrue(
-                $this->isMatchingOrderLine($orderLineEntity, $expectedLines),
+                $this->isMatchingOrderLine($orderLine, $expectedLines),
                 sprintf(
-                    'OrderLine with id=%d and description="%s" found in database mock is not expected.',
-                    $orderLineEntity->getId(),
-                    $orderLineEntity->getGoodsDescription()
+                    'OrderLine with id="%d" description="%s" not match expected.',
+                    $orderLine->getId(),
+                    $orderLine->getGoodsDescription()
                 )
             );
         }
@@ -189,9 +193,9 @@ class CreateOrderCmdTest extends TestCase
                     ],
                     'lines' => [],
                 ],
-                'validatorResponse' => null,
+                'fixedAddress' => null,
                 'expectedId' => 5,
-                'expectedOrder' => [
+                'expectedHeader' => [
                     'customerId' => self::CUSTOMER_ID,
                     'number' => '#^[0-9]+/[0-9]{8}/[0-9]+$#',
                     'status' => OrderStatusEnum::NEW,
@@ -259,7 +263,7 @@ class CreateOrderCmdTest extends TestCase
                         ],
                     ],
                 ],
-                'validatorResponse' => self::createFakeObject(FixedAddressEntity::class, [
+                'fixedAddress' => self::createFakeObject(FixedAddress::class, [
                     'id' => 20,
                     'customerId' => self::CUSTOMER_ID,
                     'externalId' => 'WH1',
@@ -269,11 +273,11 @@ class CreateOrderCmdTest extends TestCase
                     'zipCode' => '61-801'
                 ]),
                 'expectedId' => 5,
-                'expectedOrder' => [
+                'expectedHeader' => [
                     'customerId' => self::CUSTOMER_ID,
                     'number' => '#^[0-9]+/[0-9]{8}/[0-9]+$#',
                     'status' => OrderStatusEnum::NEW,
-                    'quantityTotal' => 0,
+                    'quantityTotal' => 8,
                     'loadingDate' => '2024-06-03',
                     'loadingNameCompanyOrPerson' => 'Warehouse 1',
                     'loadingAddress' => 'Dworcowa 2',
@@ -318,7 +322,7 @@ class CreateOrderCmdTest extends TestCase
     /**
      * @param array<int, array<string, mixed>> $expectedLines
      */
-    private function isMatchingOrderLine(OrderLineEntity $entity, array $expectedLines): bool
+    private function isMatchingOrderLine(OrderLine $entity, array $expectedLines): bool
     {
         $matchFound = false;
         foreach ($expectedLines as $line) {
@@ -338,69 +342,5 @@ class CreateOrderCmdTest extends TestCase
         }
 
         return $matchFound;
-    }
-
-    /**
-     * @param array<string, mixed> $dtoData
-     *
-     * @noinspection PhpUnhandledExceptionInspection
-     */
-    #[Test]
-    #[DataProvider('dataProviderCreateOrderWithRollback')]
-    public function createOrderWithRollback(
-        array $dtoData,
-    ): void {
-        $dtoData['loadingAddress'] = $dtoData['loadingAddress'] ? new OrderAddressDto(...$dtoData['loadingAddress']) : null;
-        $dtoData['loadingContact'] = new OrderAddressContactDto(...$dtoData['loadingContact']);
-        $dtoData['deliveryAddress'] = new OrderAddressDto(...$dtoData['deliveryAddress']);
-        $dtoData['deliveryContact'] = new OrderAddressContactDto(...$dtoData['deliveryContact']);
-        $dto = new CreateOrderDto(...$dtoData);
-
-        $this->expectException(Exception::class);
-
-        $this->entityManager->method('flush')->willThrowException(new Exception('Simulated DB failure'));
-
-        $this->entityManager->expects(self::once())->method('rollback');
-        $this->logger->expects(self::never())->method('info');
-
-        $this->sut->createOrder($dto);
-    }
-
-    /**
-     * @return array<string, array<string, mixed>>
-     */
-    public static function dataProviderCreateOrderWithRollback(): array
-    {
-        return [
-            'explicit-loading-address-no-lines' => [
-                'dtoData' => [
-                    'loadingDate' => '2024-06-03',
-                    'loadingFixedAddressExternalId' => null,
-                    'loadingAddress' => [
-                        'nameCompanyOrPerson' => 'Load Place',
-                        'address' => 'ul. Garbary 125',
-                        'city' => 'Poznań',
-                        'zipCode' => '61-719'
-                    ],
-                    'loadingContact' => [
-                        'contactPerson' => 'Contact Person',
-                        'contactPhone' => '+48-222-222-222',
-                        'contactEmail' => 'person@email.com',
-                    ],
-                    'deliveryAddress' => [
-                        'nameCompanyOrPerson' => 'Delivery Place',
-                        'address' => 'ul. Wschodnia',
-                        'city' => 'Poznań',
-                        'zipCode' => '61-001'
-                    ],
-                    'deliveryContact' => [
-                        'contactPerson' => 'Person2',
-                        'contactPhone' => '+48-111-111-111',
-                        'contactEmail' => null,
-                    ],
-                    'lines' => [],
-                ],
-            ],
-        ];
     }
 }

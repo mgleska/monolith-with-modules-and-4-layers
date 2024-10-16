@@ -13,6 +13,7 @@ const EXPORT_DIR_1 = '_2_Export';
 const EXPORT_DIR_2 = 'Export';
 const CONNECTOR_DIR_1 = '_1_Connector';
 const CONNECTOR_DIR_2 = 'Connector';
+const COMMON_IFRASTRUCTURE_DIR = 'CommonInfrastructure';
 
 $parser = (new ParserFactory())->createForHostVersion();
 $traverser = new NodeTraverser;
@@ -48,7 +49,7 @@ if ($totalCount > 0) {
     exit(1);
 }
 
-print " [OK] No errors\n";
+print "\n [OK] No errors\n\n";
 exit(0);
 
 
@@ -73,7 +74,7 @@ function analyze(array $stmts): array
 
         $app = $prts[0];
         $module = $prts[1];
-        $layer = $prts[2];
+        $layer = $prts[2] ?? '';
 
         foreach ($st->stmts as $stl2) {
             if (! $stl2 instanceof Stmt\Use_) {
@@ -86,6 +87,9 @@ function analyze(array $stmts): array
                     continue;
                 }
                 if ($prts[0] !== $app) {
+                    continue;
+                }
+                if ($prts[1] === COMMON_IFRASTRUCTURE_DIR) {
                     continue;
                 }
                 if ($prts[1] !== $module) {

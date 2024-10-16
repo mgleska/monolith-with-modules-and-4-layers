@@ -80,7 +80,7 @@ class OrderController extends AbstractController
         #[MapRequestPayload] CreateOrderDto $dto,
         CreateOrderInterface $service,
     ): Response {
-        $id = $service->createOrder($dto, true);
+        $id = $service->createOrder($dto);
         return new JsonResponse(new SuccessResponseDto(['id' => $id]), Response::HTTP_CREATED);
     }
 }

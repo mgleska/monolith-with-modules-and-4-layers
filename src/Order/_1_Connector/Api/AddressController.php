@@ -54,7 +54,7 @@ class AddressController extends AbstractController
         #[MapRequestPayload] CreateFixedAddressDto $dto,
         CreateFixedAddressInterface $service,
     ): JsonResponse {
-        $id = $service->createFixedAddress($dto, true);
+        $id = $service->createFixedAddress($dto);
 
         return new JsonResponse(new SuccessResponseDto(['id' => $id]), Response::HTTP_CREATED);
     }

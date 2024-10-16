@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Order\_3_Action\Command;
 
 use App\Auth\_2_Export\UserBagInterface;
+use App\CommonInfrastructure\GenericDtoValidator;
 use App\Order\_2_Export\Command\CreateOrderInterface;
 use App\Order\_2_Export\Dto\Order\CreateOrderDto;
 use App\Order\_2_Export\Dto\Order\OrderLineDto;
@@ -14,7 +15,6 @@ use App\Order\_3_Action\Entity\Order;
 use App\Order\_3_Action\Entity\OrderHeader;
 use App\Order\_3_Action\Entity\OrderLine;
 use App\Order\_3_Action\Validator\FixedAddressValidator;
-use App\Order\_3_Action\Validator\GenericDtoValidator;
 use App\Order\_3_Action\Validator\OrderValidator;
 use App\Order\_4_Infrastructure\Repository\FixedAddressRepository;
 use App\Order\_4_Infrastructure\Repository\OrderHeaderRepository;
@@ -42,11 +42,9 @@ class CreateOrderCmd implements CreateOrderInterface
      * @throws ValidationFailedException
      * @throws Exception
      */
-    public function createOrder(CreateOrderDto $dto, bool $isValidated = false): int
+    public function createOrder(CreateOrderDto $dto): int
     {
-        if (! $isValidated) {
-            $this->dtoValidator->validate($dto, 'createOrder');
-        }
+        $this->dtoValidator->validate($dto, __FUNCTION__);
 
         if ($dto->loadingFixedAddressExternalId !== null) {
             $fixedAddress = $this->addressRepository->findOneBy(

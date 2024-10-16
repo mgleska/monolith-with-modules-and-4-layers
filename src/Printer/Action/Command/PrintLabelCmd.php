@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Printer\Action\Command;
 
-use App\Printer\Action\Validator\GenericDtoValidator;
+use App\CommonInfrastructure\GenericDtoValidator;
 use App\Printer\Export\Dto\PrintLabelDto;
 use App\Printer\Export\PrintLabelInterface;
 
@@ -18,11 +18,9 @@ class PrintLabelCmd implements PrintLabelInterface
     ) {
     }
 
-    public function printLabel(PrintLabelDto $dto, bool $isValidated = false): string
+    public function printLabel(PrintLabelDto $dto): string
     {
-        if (! $isValidated) {
-            $this->dtoValidator->validate($dto, 'printLabel');
-        }
+        $this->dtoValidator->validate($dto, __FUNCTION__);
 
         $label = sprintf("%-40s | %-40s\n", 'Loading Address', 'Delivery Address');
         $label .= str_repeat('-', 81) . "\n";

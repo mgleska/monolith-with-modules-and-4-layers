@@ -8,5 +8,5 @@ use App\Order\_2_Export\Dto\FixedAddress\CreateFixedAddressDto;
 
 interface CreateFixedAddressInterface
 {
-    public function createFixedAddress(CreateFixedAddressDto $dto, bool $isValidated = false): int;
+    public function createFixedAddress(CreateFixedAddressDto $dto): int;
 }

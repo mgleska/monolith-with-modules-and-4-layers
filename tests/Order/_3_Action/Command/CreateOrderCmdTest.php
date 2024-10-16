@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Order\_3_Action\Command;
 
 use App\Auth\_2_Export\UserBagInterface;
+use App\CommonInfrastructure\GenericDtoValidator;
 use App\Order\_2_Export\Dto\Order\CreateOrderDto;
 use App\Order\_2_Export\Dto\Order\OrderAddressContactDto;
 use App\Order\_2_Export\Dto\Order\OrderAddressDto;
@@ -16,18 +17,19 @@ use App\Order\_3_Action\Entity\Order;
 use App\Order\_3_Action\Entity\OrderHeader;
 use App\Order\_3_Action\Entity\OrderLine;
 use App\Order\_3_Action\Validator\FixedAddressValidator;
-use App\Order\_3_Action\Validator\GenericDtoValidator;
 use App\Order\_3_Action\Validator\OrderValidator;
 use App\Order\_4_Infrastructure\Repository\FixedAddressRepository;
 use App\Order\_4_Infrastructure\Repository\OrderHeaderRepository;
 use App\Order\_4_Infrastructure\Repository\OrderRepository;
 use App\Tests\AutoincrementIdTrait;
+use DateMalformedStringException;
 use DateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use ReflectionException;
 use RepositoryMock\RepositoryMockTrait;
 
 class CreateOrderCmdTest extends TestCase
@@ -39,7 +41,6 @@ class CreateOrderCmdTest extends TestCase
 
     private MockObject|OrderRepository $orderRepository;
     private MockObject|OrderHeaderRepository $orderHeaderRepository;
-    private MockObject|OrderValidator $validator;
     private MockObject|LoggerInterface $logger;
     private MockObject|UserBagInterface $userBag;
     private MockObject|FixedAddressRepository $addressRepository;
@@ -53,7 +54,6 @@ class CreateOrderCmdTest extends TestCase
     {
         $this->orderRepository = $this->createMock(OrderRepository::class);
         $this->orderHeaderRepository = $this->createMock(OrderHeaderRepository::class);
-        $this->validator = $this->createMock(OrderValidator::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->userBag = $this->createMock(UserBagInterface::class);
         $this->addressRepository = $this->createMock(FixedAddressRepository::class);
@@ -64,7 +64,7 @@ class CreateOrderCmdTest extends TestCase
         $this->sut = new CreateOrderCmd(
             $this->orderRepository,
             $this->orderHeaderRepository,
-            $this->validator,
+            $this->createMock(OrderValidator::class),
             $this->logger,
             $this->userBag,
             $this->createMock(GenericDtoValidator::class),
@@ -79,6 +79,7 @@ class CreateOrderCmdTest extends TestCase
      * @param array<int, array<string, mixed>> $expectedLines
      *
      * @noinspection PhpUnhandledExceptionInspection
+     * @throws DateMalformedStringException
      */
     #[Test]
     #[DataProvider('dataProviderCreateOrder')]
@@ -119,28 +120,28 @@ class CreateOrderCmdTest extends TestCase
 
         $this->assertSame($expectedId, $result);
 
-        $storedOrderHader = $storedOrder->getHeader();
+        $storedOrderHeader = $storedOrder->getHeader();
         $this->assertSame($expectedId, $storedOrder->getId());
-        $this->assertSame($expectedHeader['customerId'], $storedOrderHader->getCustomerId());
-        $this->assertMatchesRegularExpression($expectedHeader['number'], $storedOrderHader->getNumber());
-        $this->assertSame($expectedHeader['status'], $storedOrderHader->getStatus());
-        $this->assertSame($expectedHeader['quantityTotal'], $storedOrderHader->getQuantityTotal());
-        $this->assertEquals(new DateTime($expectedHeader['loadingDate']), $storedOrderHader->getLoadingDate());
-        $this->assertSame($expectedHeader['loadingNameCompanyOrPerson'], $storedOrderHader->getLoadingNameCompanyOrPerson());
-        $this->assertSame($expectedHeader['loadingAddress'], $storedOrderHader->getLoadingAddress());
-        $this->assertSame($expectedHeader['loadingCity'], $storedOrderHader->getLoadingCity());
-        $this->assertSame($expectedHeader['loadingZipCode'], $storedOrderHader->getLoadingZipCode());
-        $this->assertSame($expectedHeader['loadingContactPerson'], $storedOrderHader->getLoadingContactPerson());
-        $this->assertSame($expectedHeader['loadingContactPhone'], $storedOrderHader->getLoadingContactPhone());
-        $this->assertSame($expectedHeader['loadingContactEmail'], $storedOrderHader->getLoadingContactEmail());
-        $this->assertSame($expectedHeader['loadingFixedAddressExternalId'], $storedOrderHader->getLoadingFixedAddressExternalId());
-        $this->assertSame($expectedHeader['deliveryNameCompanyOrPerson'], $storedOrderHader->getDeliveryNameCompanyOrPerson());
-        $this->assertSame($expectedHeader['deliveryAddress'], $storedOrderHader->getDeliveryAddress());
-        $this->assertSame($expectedHeader['deliveryCity'], $storedOrderHader->getDeliveryCity());
-        $this->assertSame($expectedHeader['deliveryZipCode'], $storedOrderHader->getDeliveryZipCode());
-        $this->assertSame($expectedHeader['deliveryContactPerson'], $storedOrderHader->getDeliveryContactPerson());
-        $this->assertSame($expectedHeader['deliveryContactPhone'], $storedOrderHader->getDeliveryContactPhone());
-        $this->assertSame($expectedHeader['deliveryContactEmail'], $storedOrderHader->getDeliveryContactEmail());
+        $this->assertSame($expectedHeader['customerId'], $storedOrderHeader->getCustomerId());
+        $this->assertMatchesRegularExpression($expectedHeader['number'], $storedOrderHeader->getNumber());
+        $this->assertSame($expectedHeader['status'], $storedOrderHeader->getStatus());
+        $this->assertSame($expectedHeader['quantityTotal'], $storedOrderHeader->getQuantityTotal());
+        $this->assertEquals(new DateTime($expectedHeader['loadingDate']), $storedOrderHeader->getLoadingDate());
+        $this->assertSame($expectedHeader['loadingNameCompanyOrPerson'], $storedOrderHeader->getLoadingNameCompanyOrPerson());
+        $this->assertSame($expectedHeader['loadingAddress'], $storedOrderHeader->getLoadingAddress());
+        $this->assertSame($expectedHeader['loadingCity'], $storedOrderHeader->getLoadingCity());
+        $this->assertSame($expectedHeader['loadingZipCode'], $storedOrderHeader->getLoadingZipCode());
+        $this->assertSame($expectedHeader['loadingContactPerson'], $storedOrderHeader->getLoadingContactPerson());
+        $this->assertSame($expectedHeader['loadingContactPhone'], $storedOrderHeader->getLoadingContactPhone());
+        $this->assertSame($expectedHeader['loadingContactEmail'], $storedOrderHeader->getLoadingContactEmail());
+        $this->assertSame($expectedHeader['loadingFixedAddressExternalId'], $storedOrderHeader->getLoadingFixedAddressExternalId());
+        $this->assertSame($expectedHeader['deliveryNameCompanyOrPerson'], $storedOrderHeader->getDeliveryNameCompanyOrPerson());
+        $this->assertSame($expectedHeader['deliveryAddress'], $storedOrderHeader->getDeliveryAddress());
+        $this->assertSame($expectedHeader['deliveryCity'], $storedOrderHeader->getDeliveryCity());
+        $this->assertSame($expectedHeader['deliveryZipCode'], $storedOrderHeader->getDeliveryZipCode());
+        $this->assertSame($expectedHeader['deliveryContactPerson'], $storedOrderHeader->getDeliveryContactPerson());
+        $this->assertSame($expectedHeader['deliveryContactPhone'], $storedOrderHeader->getDeliveryContactPhone());
+        $this->assertSame($expectedHeader['deliveryContactEmail'], $storedOrderHeader->getDeliveryContactEmail());
 
         $this->assertSame(count($expectedLines), count($storedOrder->getLines()));
         foreach ($storedOrder->getLines() as $orderLine) {
@@ -161,6 +162,7 @@ class CreateOrderCmdTest extends TestCase
      * @return array<string, array<string, mixed>>
      *
      * @noinspection PhpUnhandledExceptionInspection
+     * @throws ReflectionException
      */
     public static function dataProviderCreateOrder(): array
     {

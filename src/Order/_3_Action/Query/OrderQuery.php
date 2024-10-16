@@ -23,7 +23,7 @@ class OrderQuery implements GetOrderInterface
      * @throws ApiProblemException
      * @throws Exception
      */
-    public function getOrder(int $id, bool $isValidated = false): OrderDto
+    public function getOrder(int $id): OrderDto
     {
         $order = $this->orderRepository->get($id, true, true);
         $this->orderValidator->validateExists($order);

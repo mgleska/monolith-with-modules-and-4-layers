@@ -12,5 +12,5 @@ interface CreateOrderInterface
     /**
      * @throws Exception
      */
-    public function createOrder(CreateOrderDto $dto, bool $isValidated = false): int;
+    public function createOrder(CreateOrderDto $dto): int;
 }

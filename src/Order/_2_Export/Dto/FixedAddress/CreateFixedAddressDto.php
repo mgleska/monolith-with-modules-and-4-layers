@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Order\_2_Export\Dto\FixedAddress;
 
+use App\CommonInfrastructure\GenericDtoValidator;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[Assert\Callback([GenericDtoValidator::class, 'registerValidation'])]
 class CreateFixedAddressDto
 {
     #[Assert\Range(min: 1)]

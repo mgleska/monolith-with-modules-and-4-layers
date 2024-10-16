@@ -8,5 +8,5 @@ use App\Printer\Export\Dto\PrintLabelDto;
 
 interface PrintLabelInterface
 {
-    public function printLabel(PrintLabelDto $dto, bool $isValidated = false): string;
+    public function printLabel(PrintLabelDto $dto): string;
 }

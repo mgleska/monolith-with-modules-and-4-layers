@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Printer\Export\Dto;
 
+use App\CommonInfrastructure\GenericDtoValidator;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[Assert\Callback([GenericDtoValidator::class, 'registerValidation'])]
 class PrintLabelDto
 {
     #[Assert\Valid]

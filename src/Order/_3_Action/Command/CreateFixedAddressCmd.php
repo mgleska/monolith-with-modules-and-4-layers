@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Order\_3_Action\Command;
 
+use App\CommonInfrastructure\GenericDtoValidator;
 use App\Order\_2_Export\Command\CreateFixedAddressInterface;
 use App\Order\_2_Export\Dto\FixedAddress\CreateFixedAddressDto;
 use App\Order\_3_Action\Entity\FixedAddress;
 use App\Order\_3_Action\Validator\CustomerValidator;
 use App\Order\_3_Action\Validator\FixedAddressValidator;
-use App\Order\_3_Action\Validator\GenericDtoValidator;
 use App\Order\_4_Infrastructure\Repository\FixedAddressRepository;
 
 class CreateFixedAddressCmd implements CreateFixedAddressInterface
@@ -22,11 +22,9 @@ class CreateFixedAddressCmd implements CreateFixedAddressInterface
     ) {
     }
 
-    public function createFixedAddress(CreateFixedAddressDto $dto, bool $isValidated = false): int
+    public function createFixedAddress(CreateFixedAddressDto $dto): int
     {
-        if (! $isValidated) {
-            $this->dtoValidator->validate($dto, 'createFixedAddress');
-        }
+        $this->dtoValidator->validate($dto, __FUNCTION__);
 
         $this->customerValidator->validateCustomerId($dto->customerId);
         $this->validator->validateExternalIdNotUsed($dto->customerId, $dto->externalId);

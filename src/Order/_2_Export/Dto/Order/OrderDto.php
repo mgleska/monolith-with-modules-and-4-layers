@@ -16,6 +16,7 @@ use function array_map;
 class OrderDto
 {
     public readonly int $id;
+    public readonly int $version;
 
     #[OA\Property(minLength: 1, maxLength: 50, example: 'ul. Garbary 125')]
     public readonly string $number;
@@ -47,6 +48,7 @@ class OrderDto
      */
     public function __construct(
         int $id,
+        int $version,
         string $number,
         OrderStatusEnum $status,
         int $quantityTotal,
@@ -60,6 +62,7 @@ class OrderDto
         array $ssccs
     ) {
         $this->id = $id;
+        $this->version = $version;
         $this->number = $number;
         $this->status = $status;
         $this->quantityTotal = $quantityTotal;
@@ -80,44 +83,45 @@ class OrderDto
     {
         return new self(
             $entity->getId(),
-            $entity->getHeader()->getNumber(),
-            $entity->getHeader()->getStatus(),
-            $entity->getHeader()->getQuantityTotal(),
-            new DateVO($entity->getHeader()->getLoadingDate()),
-            $entity->getHeader()->getLoadingFixedAddressExternalId(),
+            $entity->getVersion(),
+            $entity->getNumber(),
+            $entity->getStatus(),
+            $entity->getQuantityTotal(),
+            new DateVO($entity->getLoadingDate()),
+            $entity->getLoadingFixedAddressExternalId(),
             new OrderAddressDto(
-                $entity->getHeader()->getLoadingNameCompanyOrPerson(),
-                $entity->getHeader()->getLoadingAddress(),
-                $entity->getHeader()->getLoadingCity(),
-                $entity->getHeader()->getLoadingZipCode(),
+                $entity->getLoadingNameCompanyOrPerson(),
+                $entity->getLoadingAddress(),
+                $entity->getLoadingCity(),
+                $entity->getLoadingZipCode(),
             ),
             new OrderAddressContactDto(
-                $entity->getHeader()->getLoadingContactPerson(),
-                $entity->getHeader()->getLoadingContactPhone(),
-                $entity->getHeader()->getLoadingContactEmail(),
+                $entity->getLoadingContactPerson(),
+                $entity->getLoadingContactPhone(),
+                $entity->getLoadingContactEmail(),
             ),
             new OrderAddressDto(
-                $entity->getHeader()->getDeliveryNameCompanyOrPerson(),
-                $entity->getHeader()->getDeliveryAddress(),
-                $entity->getHeader()->getDeliveryCity(),
-                $entity->getHeader()->getDeliveryZipCode(),
+                $entity->getDeliveryNameCompanyOrPerson(),
+                $entity->getDeliveryAddress(),
+                $entity->getDeliveryCity(),
+                $entity->getDeliveryZipCode(),
             ),
             new OrderAddressContactDto(
-                $entity->getHeader()->getDeliveryContactPerson(),
-                $entity->getHeader()->getDeliveryContactPhone(),
-                $entity->getHeader()->getDeliveryContactEmail(),
+                $entity->getDeliveryContactPerson(),
+                $entity->getDeliveryContactPhone(),
+                $entity->getDeliveryContactEmail(),
             ),
             array_map(
                 function (OrderLine $line) {
                     return OrderLineDto::fromEntity($line);
                 },
-                $entity->getLines()
+                $entity->getLines()->toArray()
             ),
             array_map(
                 function (OrderSscc $sscc) {
                     return OrderSsccDto::fromEntity($sscc);
                 },
-                $entity->getSsccs()
+                $entity->getSsccs()->toArray()
             )
         );
     }

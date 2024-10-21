@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Order\_3_Action\Validator;
 
-use App\Api\_2_Export\ApiProblemException;
+use App\CommonInfrastructure\Api\ApiProblemException;
 use App\Order\_3_Action\Entity\FixedAddress;
 use App\Order\_3_Action\Validator\FixedAddressValidator;
 use App\Order\_4_Infrastructure\Repository\FixedAddressRepository;
@@ -25,6 +25,8 @@ class FixedAddressValidatorTest extends TestCase
     private FixedAddressValidator $sut;
 
     private FixedAddressRepository|RepositoryMockObject $addressRepository;
+
+    private const CUSTOMER_ID = 1;
 
     protected function setUp(): void
     {
@@ -60,7 +62,7 @@ class FixedAddressValidatorTest extends TestCase
                 'expected' => 'ORDER_FIXEDADDRESS_NOT_FOUND',
             ],
             'valid' => [
-                'address' => new FixedAddress(),
+                'address' => new FixedAddress(self::CUSTOMER_ID),
                 'expected' => '',
             ],
         ];

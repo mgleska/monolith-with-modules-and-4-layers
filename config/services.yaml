@@ -18,7 +18,7 @@ services:
         exclude:
             - '../src/DependencyInjection/'
             - '../src/Kernel.php'
-            - '../src/Api/_2_Export/Dto'
+            - '../src/CommonInfrastructure\Api\Dto'
             - '../src/Auth/_3_Action/Entity'
             - '../src/Customer/_3_Action/Entity'
             - '../src/Order/_2_Export/Dto'
@@ -30,6 +30,6 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    App\Api\_1_Connector\EventHandler\ApiProblemExceptionHandler:
+    App\CommonInfrastructure\Api\ApiProblemExceptionHandler:
         tags:
             - {name: kernel.event_listener, event: kernel.exception}

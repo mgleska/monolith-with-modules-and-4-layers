@@ -19,6 +19,9 @@ class FixedAddress
     #[ORM\Column]
     private int $customerId;
 
+    #[ORM\Column]
+    private int $version;
+
     #[ORM\Column(length: 100)]
     private string $externalId;
 
@@ -34,6 +37,12 @@ class FixedAddress
     #[ORM\Column(length: 50)]
     private string $zipCode;
 
+    public function __construct(int $customerId)
+    {
+        $this->customerId = $customerId;
+        $this->version = 0;
+    }
+
     public function getId(): int
     {
         return $this->id;
@@ -44,11 +53,9 @@ class FixedAddress
         return $this->customerId;
     }
 
-    public function setCustomerId(int $customerId): static
+    public function getVersion(): int
     {
-        $this->customerId = $customerId;
-
-        return $this;
+        return $this->version;
     }
 
     public function getExternalId(): string
@@ -109,5 +116,10 @@ class FixedAddress
         $this->zipCode = $zipCode;
 
         return $this;
+    }
+
+    public function incrementVersion(): void
+    {
+        $this->version += 1;
     }
 }

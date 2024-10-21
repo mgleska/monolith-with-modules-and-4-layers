@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Api\_3_Action\Service;
+namespace App\CommonInfrastructure\Api;
 
-use App\Api\_2_Export\ApiProblemException;
-use App\Api\_2_Export\ApiProblemServiceInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,7 +11,7 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 
-class ApiProblemService implements ApiProblemServiceInterface
+class ApiProblemService
 {
     private LoggerInterface $logger;
     private ParameterBagInterface $parameterBag;

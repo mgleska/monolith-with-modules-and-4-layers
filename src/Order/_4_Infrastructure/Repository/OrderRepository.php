@@ -5,55 +5,56 @@ declare(strict_types=1);
 namespace App\Order\_4_Infrastructure\Repository;
 
 use App\Order\_3_Action\Entity\Order;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Order\_3_Action\Entity\OrderLine;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\LockMode;
+use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 
-class OrderRepository
+/**
+ * @extends ServiceEntityRepository<Order>
+ */
+class OrderRepository extends ServiceEntityRepository
 {
-    public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly OrderHeaderRepository $headerRepository,
-        private readonly OrderLineRepository $lineRepository,
-        private readonly OrderSsccRepository $ssccRepository,
-    ) {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Order::class);
     }
 
     /**
      * @throws Exception
      */
-    public function storeNew(Order $order): void
+    public function save(Order $entity, bool $flush = false): void
     {
-        try {
-            $this->entityManager->beginTransaction();
-            $this->headerRepository->save($order->getHeader(), true);
+        $this->getEntityManager()->persist($entity);
 
-            foreach ($order->getLines() as $line) {
-                $this->lineRepository->save($line);
+        if ($flush) {
+            $entity->incrementVersion();
+            if ($this->getEntityManager()->getConnection()->isTransactionActive()) {
+                try {
+                    $this->getEntityManager()->flush();
+                    $this->getEntityManager()->commit();
+                } catch (Exception $e) {
+                    $this->getEntityManager()->rollback();
+                    throw $e;
+                }
+            } else {
+                $this->getEntityManager()->flush();
             }
-
-            $this->entityManager->flush();
-            $this->entityManager->commit();
-        } catch (Exception $e) {
-            $this->entityManager->rollback();
-            throw $e;
         }
     }
 
-    public function get(int $id, bool $withLines = false, bool $withSsccs = false): ?Order
+    public function removeLine(OrderLine $line): void
     {
-        $header = $this->headerRepository->find($id);
-        if ($header === null) {
-            return null;
+        $this->getEntityManager()->remove($line);
+    }
+
+    public function getWithLock(int $id): Order|null
+    {
+        if (! $this->getEntityManager()->getConnection()->isTransactionActive()) {
+            $this->getEntityManager()->beginTransaction();
         }
 
-        if ($withLines) {
-            $lines = $this->lineRepository->findBy(['orderHeader' => $header]);
-        }
-
-        if ($withSsccs) {
-            $ssccs = $this->ssccRepository->findBy(['orderHeader' => $header]);
-        }
-
-        return new Order($header, $lines ?? [], $ssccs ?? []);
+        return $this->find($id, LockMode::PESSIMISTIC_WRITE);
     }
 }

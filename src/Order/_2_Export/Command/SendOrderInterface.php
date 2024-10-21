@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Order\_2_Export\Command;
 
-use Doctrine\DBAL\Exception as DBALException;
+use Exception;
 
 interface SendOrderInterface
 {
     /**
      * @return array{bool, string}
-     * @throws DBALException
+     * @throws Exception
      */
-    public function sendOrder(int $orderId): array;
+    public function sendOrder(int $orderId, int $version): array;
 }

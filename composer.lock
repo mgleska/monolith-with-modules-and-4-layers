@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac15f1f603eaf2ca900095065da078c3",
+    "content-hash": "a5134714bfe9ebd68633f5d026230a75",
     "packages": [
         {
             "name": "doctrine/cache",
@@ -5766,16 +5766,16 @@
     "packages-dev": [
         {
             "name": "mgleska/repositorymock",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mgleska/repositorymock.git",
-                "reference": "11ce75708c7586bc82584a591f5ef7bc26fa9910"
+                "reference": "1dff894545f31e407d3be60393bc88d8968aac4a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mgleska/repositorymock/zipball/11ce75708c7586bc82584a591f5ef7bc26fa9910",
-                "reference": "11ce75708c7586bc82584a591f5ef7bc26fa9910",
+                "url": "https://api.github.com/repos/mgleska/repositorymock/zipball/1dff894545f31e407d3be60393bc88d8968aac4a",
+                "reference": "1dff894545f31e407d3be60393bc88d8968aac4a",
                 "shasum": ""
             },
             "require": {
@@ -5820,10 +5820,10 @@
             ],
             "description": "A package to facilitate the testing of classes/methods which uses ORM Repository and ORM Entity objects.",
             "support": {
-                "source": "https://github.com/mgleska/repositorymock/tree/1.0.0",
+                "source": "https://github.com/mgleska/repositorymock/tree/1.1.0",
                 "issues": "https://github.com/mgleska/repositorymock/issues"
             },
-            "time": "2024-05-28T07:40:44+00:00"
+            "time": "2024-10-22T10:15:49+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -6588,16 +6588,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "11.4.1",
+            "version": "11.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "7875627f15f4da7e7f0823d1f323f7295a77334e"
+                "reference": "d62c45a19c665bb872c2a47023a0baf41a98bb2b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/7875627f15f4da7e7f0823d1f323f7295a77334e",
-                "reference": "7875627f15f4da7e7f0823d1f323f7295a77334e",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/d62c45a19c665bb872c2a47023a0baf41a98bb2b",
+                "reference": "d62c45a19c665bb872c2a47023a0baf41a98bb2b",
                 "shasum": ""
             },
             "require": {
@@ -6636,7 +6636,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "11.4-dev"
+                    "dev-main": "11.3-dev"
                 }
             },
             "autoload": {
@@ -6668,7 +6668,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.4.1"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.3.6"
             },
             "funding": [
                 {
@@ -6684,7 +6684,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-10-08T15:38:37+00:00"
+            "time": "2024-09-19T10:54:28+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -7899,7 +7899,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-pdo_mysql": "*"

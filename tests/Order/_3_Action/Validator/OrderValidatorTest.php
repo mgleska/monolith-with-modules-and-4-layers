@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Order\_3_Action\Validator;
 
-use App\Api\_2_Export\ApiProblemException;
 use App\Auth\_2_Export\UserBagInterface;
+use App\CommonInfrastructure\Api\ApiProblemException;
 use App\Order\_2_Export\Dto\Order\OrderAddressDto;
 use App\Order\_3_Action\Entity\FixedAddress;
 use App\Order\_3_Action\Entity\Order;
-use App\Order\_3_Action\Entity\OrderHeader;
 use App\Order\_3_Action\Validator\OrderValidator;
-use App\Order\_4_Infrastructure\Repository\OrderHeaderRepository;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -21,7 +19,6 @@ class OrderValidatorTest extends TestCase
 {
     private OrderValidator $sut;
 
-    private MockObject|OrderHeaderRepository $orderHeaderRepository;
     private MockObject|UserBagInterface $userBag;
 
     private const CUSTOMER_ID = 1;
@@ -32,12 +29,11 @@ class OrderValidatorTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->orderHeaderRepository = $this->createMock(OrderHeaderRepository::class);
         $this->userBag = $this->createMock(UserBagInterface::class);
 
         $this->userBag->method('getCustomerId')->willReturn(self::CUSTOMER_ID);
 
-        $this->sut = new OrderValidator($this->orderHeaderRepository, $this->userBag);
+        $this->sut = new OrderValidator($this->userBag);
     }
 
     #[Test]
@@ -67,7 +63,7 @@ class OrderValidatorTest extends TestCase
                 'expected' => 'ORDER_ORDER_NOT_FOUND',
             ],
             'valid' => [
-                'order' => new Order(new OrderHeader()),
+                'order' => new Order(self::CUSTOMER_ID, 'number'),
                 'expected' => '',
             ],
         ];
@@ -86,10 +82,7 @@ class OrderValidatorTest extends TestCase
             $this->expectNotToPerformAssertions();
         }
 
-        $header = new OrderHeader();
-        $header->setCustomerId($customerId);
-
-        $this->sut->validateHasAccess(new Order($header));
+        $this->sut->validateHasAccess(new Order($customerId, 'number'));
     }
 
     /**
@@ -108,42 +101,6 @@ class OrderValidatorTest extends TestCase
             ],
         ];
     }
-
-    #[Test]
-    #[DataProvider('dataProviderValidateHasAccessById')]
-    public function validateHasAccessById(
-        int $countResult,
-        string $expected
-    ): void {
-        $this->orderHeaderRepository->method('count')->willReturn($countResult);
-
-        if ($expected) {
-            $this->expectException(ApiProblemException::class);
-            $this->expectExceptionMessageMatches('/^' . $expected . '$/');
-        } else {
-            $this->expectNotToPerformAssertions();
-        }
-
-        $this->sut->validateHasAccessById(1);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public static function dataProviderValidateHasAccessById(): array
-    {
-        return [
-            'no-access' => [
-                'countResult' => 0,
-                'expected' => 'ORDER_ORDER_NOT_FOUND',
-            ],
-            'valid' => [
-                'countResult' => 1,
-                'expected' => '',
-            ],
-        ];
-    }
-
 
     #[Test]
     #[DataProvider('dataProviderValidateLoadingAddressForCreate')]
@@ -175,7 +132,7 @@ class OrderValidatorTest extends TestCase
                 'expectedExceptionMsg' => 'ORDER_CREATE_LOADING_ADDRESS_NOT_SPECIFIED',
             ],
             'set-both' => [
-                'fixedAddress' => new FixedAddress(),
+                'fixedAddress' => new FixedAddress(self::CUSTOMER_ID),
                 'addressDto' => new OrderAddressDto('', '', '', ''),
                 'expectedExceptionMsg' => 'ORDER_CREATE_LOADING_ADDRESS_SPECIFIED_BY_EXTERNAL_ID_AND_BY_VALUE',
             ],
@@ -185,7 +142,7 @@ class OrderValidatorTest extends TestCase
                 'expectedExceptionMsg' => '',
             ],
             'valid-external-id' => [
-                'fixedAddress' => new FixedAddress(),
+                'fixedAddress' => new FixedAddress(self::CUSTOMER_ID),
                 'addressDto' => null,
                 'expectedExceptionMsg' => '',
             ],

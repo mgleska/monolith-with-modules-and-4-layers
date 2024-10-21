@@ -11,8 +11,14 @@ class SendOrderDto
     #[Assert\Range(min: 1)]
     public readonly int $orderId;
 
-    public function __construct(int $orderId)
-    {
+    #[Assert\Range(min: 1)]
+    public readonly int $version;
+
+    public function __construct(
+        int $orderId,
+        int $version,
+    ) {
         $this->orderId = $orderId;
+        $this->version = $version;
     }
 }

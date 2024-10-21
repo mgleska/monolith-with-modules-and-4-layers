@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Api\_2_Export;
+namespace App\CommonInfrastructure\Api;
 
 use Symfony\Component\HttpKernel\Exception\HttpException;
 

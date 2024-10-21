@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Order\_3_Action\Entity;
 
-use App\Order\_4_Infrastructure\Repository\OrderSsccRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 use function sprintf;
 
-#[ORM\Entity(repositoryClass: OrderSsccRepository::class)]
+#[ORM\Entity]
 #[ORM\Table(name: "ord_order_sscc")]
 class OrderSscc
 {
@@ -22,12 +21,17 @@ class OrderSscc
     #[ORM\Column]
     private int $customerId;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'ssccs')]
     #[ORM\JoinColumn(name: 'order_id', referencedColumnName: 'id', nullable: false)]
-    private OrderHeader $orderHeader;
+    private Order $order;
 
     #[ORM\Column(type: Types::BIGINT)]
     private int $code;
+
+    public function __construct(int $customerId)
+    {
+        $this->customerId = $customerId;
+    }
 
     public function getId(): int
     {
@@ -39,21 +43,14 @@ class OrderSscc
         return $this->customerId;
     }
 
-    public function setCustomerId(int $customerId): static
+    public function getOrder(): Order
     {
-        $this->customerId = $customerId;
-
-        return $this;
+        return $this->order;
     }
 
-    public function getOrderHeader(): OrderHeader
+    public function setOrder(Order $order): static
     {
-        return $this->orderHeader;
-    }
-
-    public function setOrderHeader(OrderHeader $orderHeader): static
-    {
-        $this->orderHeader = $orderHeader;
+        $this->order = $order;
         return $this;
     }
 

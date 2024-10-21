@@ -2,15 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Api\_2_Export\Dto;
+namespace App\CommonInfrastructure\Api\Dto;
 
-use App\Api\_2_Export\ResponseStatusEnum;
+use App\CommonInfrastructure\Api\ResponseStatusEnum;
+use OpenApi\Attributes as OA;
 
 class FailResponseDto
 {
     // https://github.com/omniti-labs/jsend
 
+    #[OA\Property(example: 'fail')]
     public string $status;
+
+    #[OA\Property(type: 'object', example: '{"id": 1}')]
     public mixed $data;
 
     public function __construct(string $message)

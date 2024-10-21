@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Api\_2_Export;
+namespace App\CommonInfrastructure\Api;
 
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
+#[Exclude]
 class ApiProblemException extends HttpException
 {
     private string $type;

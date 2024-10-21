@@ -10,6 +10,7 @@ use OpenApi\Attributes as OA;
 class FixedAddressDto
 {
     public readonly int $id;
+    public readonly int $version;
 
     #[OA\Property(minLength: 1, maxLength: 100, example: 'WH1')]
     public readonly string $externalId;
@@ -26,9 +27,10 @@ class FixedAddressDto
     #[OA\Property(minLength: 1, maxLength:250, example: '61-719')]
     public readonly string $zipCode;
 
-    public function __construct(int $id, string $externalId, string $nameCompanyOrPerson, string $address, string $city, string $zipCode)
+    public function __construct(int $id, int $version, string $externalId, string $nameCompanyOrPerson, string $address, string $city, string $zipCode)
     {
         $this->id = $id;
+        $this->version = $version;
         $this->externalId = $externalId;
         $this->nameCompanyOrPerson = $nameCompanyOrPerson;
         $this->address = $address;
@@ -40,6 +42,7 @@ class FixedAddressDto
     {
         return new self(
             $address->getId(),
+            $address->getVersion(),
             $address->getExternalId(),
             $address->getNameCompanyOrPerson(),
             $address->getAddress(),

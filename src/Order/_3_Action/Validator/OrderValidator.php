@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace App\Order\_3_Action\Validator;
 
-use App\Api\_2_Export\ApiProblemException;
 use App\Auth\_2_Export\UserBagInterface;
+use App\CommonInfrastructure\Api\ApiProblemException;
 use App\Order\_2_Export\Dto\Order\OrderAddressDto;
 use App\Order\_3_Action\Entity\FixedAddress;
 use App\Order\_3_Action\Entity\Order;
 use App\Order\_3_Action\Enum\ApiProblemTypeEnum;
-use App\Order\_4_Infrastructure\Repository\OrderHeaderRepository;
 use Symfony\Component\HttpFoundation\Response;
 
 class OrderValidator
 {
     public function __construct(
-        private readonly OrderHeaderRepository $orderHeaderRepository,
         private readonly UserBagInterface $userBag,
     ) {
     }
@@ -37,27 +35,11 @@ class OrderValidator
 
     public function validateHasAccess(Order $order): void
     {
-        if ($order->getHeader()->getCustomerId() !== $this->userBag->getCustomerId()) {
+        if ($order->getCustomerId() !== $this->userBag->getCustomerId()) {
             throw new ApiProblemException(
                 Response::HTTP_FORBIDDEN,
                 ApiProblemTypeEnum::VALIDATOR->value,
                 'ORDER_ORDER_NO_ACCESS'
-            );
-        }
-    }
-
-    /**
-     * @throws ApiProblemException
-     */
-    public function validateHasAccessById(int $orderId): void
-    {
-        $c = $this->orderHeaderRepository->count(['id' => $orderId, 'customerId' => $this->userBag->getCustomerId()]);
-
-        if ($c === 0) {
-            throw new ApiProblemException(
-                Response::HTTP_NOT_FOUND,
-                ApiProblemTypeEnum::VALIDATOR->value,
-                'ORDER_ORDER_NOT_FOUND'
             );
         }
     }

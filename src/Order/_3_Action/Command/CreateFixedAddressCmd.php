@@ -11,6 +11,7 @@ use App\Order\_3_Action\Entity\FixedAddress;
 use App\Order\_3_Action\Validator\CustomerValidator;
 use App\Order\_3_Action\Validator\FixedAddressValidator;
 use App\Order\_4_Infrastructure\Repository\FixedAddressRepository;
+use Psr\Log\LoggerInterface;
 
 class CreateFixedAddressCmd implements CreateFixedAddressInterface
 {
@@ -19,6 +20,7 @@ class CreateFixedAddressCmd implements CreateFixedAddressInterface
         private readonly FixedAddressValidator $validator,
         private readonly CustomerValidator $customerValidator,
         private readonly GenericDtoValidator $dtoValidator,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -29,9 +31,8 @@ class CreateFixedAddressCmd implements CreateFixedAddressInterface
         $this->customerValidator->validateCustomerId($dto->customerId);
         $this->validator->validateExternalIdNotUsed($dto->customerId, $dto->externalId);
 
-        $address = new FixedAddress();
+        $address = new FixedAddress($dto->customerId);
         $address
-            ->setCustomerId($dto->customerId)
             ->setExternalId($dto->externalId)
             ->setNameCompanyOrPerson($dto->nameCompanyOrPerson)
             ->setAddress($dto->address)
@@ -39,6 +40,8 @@ class CreateFixedAddressCmd implements CreateFixedAddressInterface
             ->setZipCode($dto->zipCode);
 
         $this->addressRepository->save($address, true);
+
+        $this->logger->info('Created fixed address with id {id} for customer with id {custId}.', ['id' => $address->getId(), 'custIs' => $dto->customerId]);
 
         return $address->getId();
     }

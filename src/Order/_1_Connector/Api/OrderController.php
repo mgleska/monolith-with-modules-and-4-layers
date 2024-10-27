@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace App\Order\_1_Connector\Api;
 
-use App\Api\_2_Export\Dto\ApiProblemResponseDto;
-use App\Api\_2_Export\Dto\FailResponseDto;
-use App\Api\_2_Export\Dto\SuccessResponseDto;
+use App\CommonInfrastructure\Api\Dto\ApiProblemResponseDto;
+use App\CommonInfrastructure\Api\Dto\FailResponseDto;
+use App\CommonInfrastructure\Api\Dto\SuccessResponseDto;
 use App\Order\_2_Export\Command\CreateOrderInterface;
 use App\Order\_2_Export\Command\PrintLabelInterface;
 use App\Order\_2_Export\Command\SendOrderInterface;
+use App\Order\_2_Export\Command\UpdateOrderLinesInterface;
 use App\Order\_2_Export\Dto\Order\CreateOrderDto;
 use App\Order\_2_Export\Dto\Order\OrderDto;
 use App\Order\_2_Export\Dto\Order\PrintLabelDto;
 use App\Order\_2_Export\Dto\Order\SendOrderDto;
+use App\Order\_2_Export\Dto\Order\UpdateOrderLinesDto;
 use App\Order\_2_Export\Query\GetOrderInterface;
-use Doctrine\DBAL\Exception as DBALException;
 use Exception;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -41,14 +42,14 @@ class OrderController extends AbstractController
     }
 
     /**
-     * @throws DBALException
+     * @throws Exception
      */
     #[Route(path: '/order/send', name: 'command-send-order', methods: ['POST'], format: 'json')]
     public function sendOrder(
         #[MapRequestPayload] SendOrderDto $dto,
         SendOrderInterface $service,
     ): JsonResponse {
-        [$ok, $message] = $service->sendOrder($dto->orderId);
+        [$ok, $message] = $service->sendOrder($dto->orderId, $dto->version);
         if ($ok) {
             return new JsonResponse(new SuccessResponseDto(), Response::HTTP_OK);
         } else {
@@ -57,7 +58,7 @@ class OrderController extends AbstractController
     }
 
     /**
-     * @throws DBALException
+     * @throws Exception
      */
     #[Route(path: '/order/print-label', name: 'command-print-label', methods: ['POST'], format: 'json')]
     public function printLabel(
@@ -79,8 +80,26 @@ class OrderController extends AbstractController
     public function createOrder(
         #[MapRequestPayload] CreateOrderDto $dto,
         CreateOrderInterface $service,
-    ): Response {
+    ): JsonResponse {
         $id = $service->createOrder($dto);
+
         return new JsonResponse(new SuccessResponseDto(['id' => $id]), Response::HTTP_CREATED);
+    }
+
+    #[Route(path: '/order/update-lines', name: 'command-update-lines', methods: ['POST'], format: 'json')]
+    #[OA\Response(response: 200, description: 'Returns order data.', content: new Model(type: OrderDto::class))]
+    #[OA\Response(response: '400', description: 'some precondition fail', content: new Model(type: FailResponseDto::class))]
+    #[OA\Response(response: '400-499', description: 'some exception', content: new Model(type: ApiProblemResponseDto::class))]
+    public function updateOrderLines(
+        #[MapRequestPayload] UpdateOrderLinesDto $dto,
+        UpdateOrderLinesInterface $service,
+    ): JsonResponse {
+        [$ok, $response] = $service->updateOrderLines($dto);
+
+        if ($ok) {
+            return new JsonResponse($response);
+        } else {
+            return new JsonResponse(new FailResponseDto($response), Response::HTTP_BAD_REQUEST);
+        }
     }
 }

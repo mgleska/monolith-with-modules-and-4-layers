@@ -14,10 +14,13 @@
 2. Using Symfony Serializer and Symfony Validator to process input data received by the API.
 3. Using Symfony Security. It allows relatively simple use of ready-made solutions for connecting to various identity providers (e.g. OAuth2, SAML).
 4. One database, logically divided into modules, for many clients (multi tenant), with a distinguished parent client (he may have access to other clients' data).
-5. Zero CRUD, zero PUT/PATCH/DELETE.
-6. Using ready-made solutions to create API documentation based on data structures prepared for the Serializer and constraints needed for the Validator.
-7. Limiting setters and getters to the necessary minimum.
-8. High coverage by unit tests.
+5. DDD aggregates.
+6. Entity versioning (know also as "optimistic locking") for checking consistency between data presented to user (frontend side) and actual state of entity in database (backend side).
+7. Database deadlock avoidance.
+8. Zero CRUD, zero PUT/PATCH/DELETE.
+9. Using ready-made solutions to create API documentation based on data structures prepared for the Serializer and constraints needed for the Validator.
+10. Limiting setters and getters to the necessary minimum.
+11. High coverage by unit tests.
 
 ## 4-layers Architecture
 
@@ -47,10 +50,10 @@ Typical connectors:
 General rule for layer 1:Connector is, that component from this layer can **use** only:
 * actions and structures defined at layer 2:Export of given module,
 * supplementary classes and structures defined at layer 1:Connections of given module,
-* classes and objects from framework and `vendors/*`.
+* classes and objects from common infrastructure, framework and `vendors/*`.
 
 Usually there is no need to define connector for external call from other module in the application.\
-The reason is simple - other module can **use** action definition form layer 2:Export of given module and supply input data in form required by the action (as: value with PHP built-in type, DTO, Value Object).
+The reason is simple - other module can **use** action definition from layer 2:Export of given module and supply input data in form required by the action (as: value with PHP built-in type, DTO, Value Object).
 
 
 ### Layer 2:Export
@@ -69,7 +72,7 @@ It is important to note, that 2:Export layer **defines** but **not implement** a
 General rule for layer 2:Export is, that component from this layer can **use** only:
 * interfaces and structures defined in own layer,
 * structures defined at layers 3 and 4 with restriction, that used structures are not exposed to "external world"
-* classes and objects from framework and `vendors/*`.
+* classes and objects from common infrastructure, framework and `vendors/*`.
 
 
 ### Layer 3:Action
@@ -103,7 +106,7 @@ It gives us high level of isolation and prevents data which belongs to given mod
 General rule for layer 3:Action is, that component from this layer can **use**:
 * methods and structures defined at layers 2-4 in given module,
 * actions and structures exported (defined at layer 2:Export) by other modules,
-* classes and objects from framework and `vendors/*`.
+* classes and objects from common infrastructure, framework and `vendors/*`.
 
 
 ### Layer 4:Infrastructure
@@ -111,14 +114,19 @@ General rule for layer 3:Action is, that component from this layer can **use**:
 Layer 4:Infrastructure is a place, where module defines and implements classes, methods and structures used to perform common supplementary services required by domain actions from layer 3:Action.
 
 Good example of such supplementary service is database access and manipulation implemented by class `Repository`.\
-`Repository` implements general access methods (e.g. `find()`, `findBy()`) and also methods specific for corresponding `Entity` (e.g. `changeStatus()`, `getStatus()`).\
+`Repository` implements general access methods (e.g. `find()`, `findBy()`) and also methods specific for corresponding `Entity` (e.g. `save()`, `getWithLock()`).\
+
+Unfortunately, ORM Doctrine prefers definition of mapping between `Entity` and database table to be done with PHP attributes.
+To fulfill this requirement, we have to inject Doctrine attributes (which logically belongs to layer 4:Infrastructure) into `Entity` class which is defined in layer 3:Action.\
+Not elegant solution. But at this moment I can't find better one.
+
 It is worth to note, that `Entity` class name do not match 1-to-1 name of table in database. For example class `Order` is mapped to table `ord_order`. This approach allow to group tables of the module by common prefix (`ord_` in this example).
 
 General rule for layer 4:Infrastructure is, that component from this layer can **use** only:
 * actions and structures defined at own layer,
 * structures defined at layer 2:Export of given module,
 * actions and structures exported (defined at layer 2:Export) by other modules,
-* classes and objects from framework and `vendors/*`.
+* classes and objects from common infrastructure, framework and `vendors/*`.
 
 ## Some implementation details
 
@@ -257,7 +265,8 @@ Sample command:
     --header 'Content-Type: application/json' \
     --header 'Authorization: Bearer user-1' \
     --data '{
-    "orderId": 1
+    "orderId": 1,
+    "version": 1
     }'
 
     curl --location 'http://127.0.0.1:8000/order/order/print-label' \

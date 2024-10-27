@@ -30,6 +30,18 @@ class User implements UserInterface
     #[ORM\Column]
     private int $customerId;
 
+    #[ORM\Column]
+    private int $version;
+
+    /**
+     * @param int $customerId
+     */
+    public function __construct(int $customerId)
+    {
+        $this->customerId = $customerId;
+        $this->version = 0;
+    }
+
     public function getId(): int
     {
         return $this->id;
@@ -52,11 +64,14 @@ class User implements UserInterface
         return $this->customerId;
     }
 
-    public function setCustomerId(int $customerId): static
+    public function getVersion(): int
     {
-        $this->customerId = $customerId;
+        return $this->version;
+    }
 
-        return $this;
+    public function incrementVersion(): void
+    {
+        $this->version += 1;
     }
 
     /**

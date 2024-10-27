@@ -23,6 +23,7 @@ class FixedAddressRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($entity);
 
         if ($flush) {
+            $entity->incrementVersion();
             $this->getEntityManager()->flush();
         }
     }

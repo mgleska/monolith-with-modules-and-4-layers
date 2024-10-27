@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Order\_3_Action\Query;
 
-use App\Api\_2_Export\ApiProblemException;
+use App\CommonInfrastructure\Api\ApiProblemException;
 use App\Order\_2_Export\Dto\Order\OrderDto;
 use App\Order\_2_Export\Query\GetOrderInterface;
 use App\Order\_3_Action\Validator\OrderValidator;
@@ -25,7 +25,7 @@ class OrderQuery implements GetOrderInterface
      */
     public function getOrder(int $id): OrderDto
     {
-        $order = $this->orderRepository->get($id, true, true);
+        $order = $this->orderRepository->find($id);
         $this->orderValidator->validateExists($order);
         $this->orderValidator->validateHasAccess($order);
 

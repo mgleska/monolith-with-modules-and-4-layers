@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Order\_2_Export\Dto\Order;
 
 use App\CommonInfrastructure\GenericDtoValidator;
-use Exception;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -39,7 +38,6 @@ class CreateOrderDto
 
     /**
      * @param OrderLineDto[] $lines
-     * @throws Exception
      */
     public function __construct(
         string $loadingDate,

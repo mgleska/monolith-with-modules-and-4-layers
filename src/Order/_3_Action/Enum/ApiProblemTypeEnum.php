@@ -8,4 +8,5 @@ enum ApiProblemTypeEnum: string
 {
     case VALIDATOR = 'order/validator';
     case CREATE = 'order/create';
+    case UPDATE_LINES = 'order/update-lines';
 }

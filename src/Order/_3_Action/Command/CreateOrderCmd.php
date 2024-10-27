@@ -9,15 +9,12 @@ use App\CommonInfrastructure\GenericDtoValidator;
 use App\Order\_2_Export\Command\CreateOrderInterface;
 use App\Order\_2_Export\Dto\Order\CreateOrderDto;
 use App\Order\_2_Export\Dto\Order\OrderLineDto;
-use App\Order\_2_Export\Enum\OrderStatusEnum;
 use App\Order\_3_Action\Entity\FixedAddress;
 use App\Order\_3_Action\Entity\Order;
-use App\Order\_3_Action\Entity\OrderHeader;
 use App\Order\_3_Action\Entity\OrderLine;
 use App\Order\_3_Action\Validator\FixedAddressValidator;
 use App\Order\_3_Action\Validator\OrderValidator;
 use App\Order\_4_Infrastructure\Repository\FixedAddressRepository;
-use App\Order\_4_Infrastructure\Repository\OrderHeaderRepository;
 use App\Order\_4_Infrastructure\Repository\OrderRepository;
 use DateTime;
 use Exception;
@@ -28,7 +25,6 @@ class CreateOrderCmd implements CreateOrderInterface
 {
     public function __construct(
         private readonly OrderRepository $orderRepository,
-        private readonly OrderHeaderRepository $orderHeaderRepository,
         private readonly OrderValidator $orderValidator,
         private readonly LoggerInterface $logger,
         private readonly UserBagInterface $userBag,
@@ -57,21 +53,16 @@ class CreateOrderCmd implements CreateOrderInterface
 
         $this->orderValidator->validateLoadingAddressForCreate($fixedAddress, $dto->loadingAddress);
 
-        $orderHeader = $this->createOrderHeader($dto, $fixedAddress);
+        $order = $this->createOrderHeader($dto, $fixedAddress);
 
-        $lines = [];
-        $quantity = 0;
         foreach ($dto->lines as $lineDto) {
-            $line = $this->createOrderLine($lineDto, $orderHeader);
-            $lines[] = $line;
-            $quantity += $line->getQuantity();
+            $line = $this->createOrderLine($lineDto);
+            $order->addLine($line);
         }
-        $orderHeader->setQuantityTotal($quantity);
 
-        $order = new Order($orderHeader, $lines);
-        $this->orderRepository->storeNew($order);
+        $this->orderRepository->save($order, true);
 
-        $this->logger->info('Created order with id {id} and number {nr}.', ['id' => $order->getId(), 'nr' => $order->getHeader()->getNumber()]);
+        $this->logger->info('Created order with id {id} and number {nr}.', ['id' => $order->getId(), 'nr' => $order->getNumber()]);
 
         return $order->getId();
     }
@@ -79,13 +70,9 @@ class CreateOrderCmd implements CreateOrderInterface
     /**
      * @throws Exception
      */
-    private function createOrderHeader(CreateOrderDto $dto, FixedAddress|null $fixedAddress): OrderHeader
+    private function createOrderHeader(CreateOrderDto $dto, FixedAddress|null $fixedAddress): Order
     {
-        $order = new OrderHeader();
-        $order->setCustomerId($this->userBag->getCustomerId());
-        $order->setNumber($this->orderNumberGenerator());
-        $order->setStatus(OrderStatusEnum::NEW);
-        $order->setQuantityTotal(0);
+        $order = new Order($this->userBag->getCustomerId(), $this->orderNumberGenerator());
         $order->setLoadingDate(new DateTime($dto->loadingDate));
         if ($fixedAddress !== null) {
             $order->setLoadingFixedAddressExternalId($dto->loadingFixedAddressExternalId);
@@ -118,17 +105,15 @@ class CreateOrderCmd implements CreateOrderInterface
     {
         do {
             $nr = $this->userBag->getCustomerId() . '/' . date('Ymd') . '/' . rand(1, 9999);
-            $count = $this->orderHeaderRepository->count(['customerId' => $this->userBag->getCustomerId(), 'number' => $nr]);
+            $count = $this->orderRepository->count(['customerId' => $this->userBag->getCustomerId(), 'number' => $nr]);
         } while ($count > 0);
 
         return $nr;
     }
 
-    private function createOrderLine(OrderLineDto $lineDto, OrderHeader $orderHeader): OrderLine
+    private function createOrderLine(OrderLineDto $lineDto): OrderLine
     {
-        $entity = new OrderLine();
-        $entity->setCustomerId($this->userBag->getCustomerId());
-        $entity->setOrderHeader($orderHeader);
+        $entity = new OrderLine($this->userBag->getCustomerId());
         $entity->setQuantity($lineDto->quantity);
         $entity->setLength($lineDto->length);
         $entity->setWidth($lineDto->width);

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Api\_2_Export\Dto;
+namespace App\CommonInfrastructure\Api\Dto;
 
-use App\Api\_2_Export\ResponseStatusEnum;
+use App\CommonInfrastructure\Api\ResponseStatusEnum;
 use OpenApi\Attributes as OA;
 
 class SuccessResponseDto

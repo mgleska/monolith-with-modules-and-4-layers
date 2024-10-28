@@ -1,8 +1,8 @@
-# Monolith application with modules and 4-layers Architecture
+# Service with modules and 4-layers Architecture
 
 ## Key goals and requirements
 
-1. **Architecture: modular monolith.**
+1. **Architecture: service with modules.**
 2. Modules separated according to functional boundaries (verbs).
 3. **4-layers Architecture** applied at module level.
 4. Command Query Responsibility Segregation (**CQRS**) in its basic form (without events).
@@ -23,6 +23,8 @@
 11. High coverage by unit tests.
 
 ## 4-layers Architecture
+
+<img src="docs/img/service-with-modules.svg" alt="service with modules">
 
 <img src="docs/img/4-layers-architecture.svg" alt="architecture layers">
 

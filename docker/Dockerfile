@@ -1,4 +1,4 @@
-FROM php:8.3-cli-alpine AS dev
+FROM php:8.3-cli-alpine AS base
 
 RUN docker-php-ext-install pdo_mysql && \
     curl -o /usr/local/bin/composer https://getcomposer.org/download/latest-stable/composer.phar && \
@@ -7,7 +7,19 @@ RUN docker-php-ext-install pdo_mysql && \
 WORKDIR /app
 
 
-FROM dev AS app-kubernetes
+FROM base AS dev
+
+RUN apk update && \
+    apk add php83-pecl-xdebug && \
+    ln -s /usr/lib/php83/modules/xdebug.so `php -i | awk '$1=="extension_dir" {print $NF}'`/xdebug.so
+
+COPY ./xdebug.ini /usr/local/etc/php/conf.d/99-xdebug.ini
+
+CMD /bin/sh
+
+
+
+FROM base AS app-kubernetes
 
 ENV APP_ENV=prod APP_DEBUG=0 COMPOSER_ALLOW_SUPERUSER=1
 

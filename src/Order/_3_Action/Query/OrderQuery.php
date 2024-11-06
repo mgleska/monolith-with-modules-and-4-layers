@@ -27,7 +27,6 @@ class OrderQuery implements GetOrderInterface
     {
         $order = $this->orderRepository->find($id);
         $this->orderValidator->validateExists($order);
-        $this->orderValidator->validateHasAccess($order);
 
         return OrderDto::fromEntity($order);
     }

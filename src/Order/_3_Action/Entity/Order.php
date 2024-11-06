@@ -32,9 +32,6 @@ class Order
     private int $id;
 
     #[ORM\Column]
-    private int $customerId;
-
-    #[ORM\Column]
     private int $version;
 
     #[ORM\Column(length: 50)]
@@ -102,9 +99,8 @@ class Order
     #[ORM\OneToMany(targetEntity: OrderSscc::class, mappedBy: 'order', cascade: ['persist'])]
     private Collection $ssccs;
 
-    public function __construct(int $customerId, string $number)
+    public function __construct(string $number)
     {
-        $this->customerId = $customerId;
         $this->number = $number;
         $this->status = OrderStatusEnum::NEW;
         $this->quantityTotal = 0;
@@ -116,11 +112,6 @@ class Order
     public function getId(): int
     {
         return $this->id;
-    }
-
-    public function getCustomerId(): int
-    {
-        return $this->customerId;
     }
 
     public function getNumber(): string

@@ -117,7 +117,6 @@ class CreateOrderCmdTest extends TestCase
         $this->assertSame($expectedId, $result);
 
         $this->assertSame($expectedId, $storedOrder->getId());
-        $this->assertSame($expectedOrder['customerId'], $storedOrder->getCustomerId());
         $this->assertSame(1, $storedOrder->getVersion());
         $this->assertMatchesRegularExpression($expectedOrder['number'], $storedOrder->getNumber());
         $this->assertSame($expectedOrder['status'], $storedOrder->getStatus());
@@ -141,7 +140,6 @@ class CreateOrderCmdTest extends TestCase
 
         $this->assertSame(count($expectedLines), count($storedOrder->getLines()));
         foreach ($storedOrder->getLines() as $orderLine) {
-            $this->assertSame(self::CUSTOMER_ID, $orderLine->getCustomerId());
             $this->assertSame($expectedId, $orderLine->getOrder()->getId());
             $this->assertTrue(
                 $this->isMatchingOrderLine($orderLine, $expectedLines),
@@ -194,7 +192,6 @@ class CreateOrderCmdTest extends TestCase
                 'fixedAddress' => null,
                 'expectedId' => 5,
                 'expectedOrder' => [
-                    'customerId' => self::CUSTOMER_ID,
                     'number' => '#^[0-9]+/[0-9]{8}/[0-9]+$#',
                     'status' => OrderStatusEnum::NEW,
                     'quantityTotal' => 0,
@@ -263,7 +260,6 @@ class CreateOrderCmdTest extends TestCase
                 ],
                 'fixedAddress' => self::createFakeObject(FixedAddress::class, [
                     'id' => 20,
-                    'customerId' => self::CUSTOMER_ID,
                     'externalId' => 'WH1',
                     'nameCompanyOrPerson' => 'Warehouse 1',
                     'address' => 'Dworcowa 2',
@@ -272,7 +268,6 @@ class CreateOrderCmdTest extends TestCase
                 ]),
                 'expectedId' => 5,
                 'expectedOrder' => [
-                    'customerId' => self::CUSTOMER_ID,
                     'number' => '#^[0-9]+/[0-9]{8}/[0-9]+$#',
                     'status' => OrderStatusEnum::NEW,
                     'quantityTotal' => 8,

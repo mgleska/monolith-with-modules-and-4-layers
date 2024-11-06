@@ -28,7 +28,6 @@ class SendOrderCmd implements SendOrderInterface
     {
         $order = $this->orderRepository->getWithLock($orderId);
         $this->validator->validateExists($order);
-        $this->validator->validateHasAccess($order);
 
         if ($order->getVersion() !== $version) {
             return [false, 'ORDER_VERSION_IN_DATABASE_IS_DIFFERENT'];

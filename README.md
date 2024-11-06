@@ -13,14 +13,15 @@
 1. Application built using the Symfony framework.
 2. Using Symfony Serializer and Symfony Validator to process input data received by the API.
 3. Using Symfony Security. It allows relatively simple use of ready-made solutions for connecting to various identity providers (e.g. OAuth2, SAML).
-4. One database, logically divided into modules, for many clients (multi tenant), with a distinguished parent client (he may have access to other clients' data).
-5. DDD aggregates.
-6. Entity versioning (know also as "optimistic locking") for checking consistency between data presented to user (frontend side) and actual state of entity in database (backend side).
-7. Database deadlock avoidance.
-8. Zero CRUD, zero PUT/PATCH/DELETE.
-9. Using ready-made solutions to create API documentation based on data structures prepared for the Serializer and constraints needed for the Validator.
-10. Limiting setters and getters to the necessary minimum.
-11. High coverage by unit tests.
+4. Multi tenant with separate database for each tenant and one common database for system management (users, tenants definition, etc.).
+5. Tenant database logically divided into modules (by prefix in table name).
+6. DDD aggregates.
+7. Entity versioning (know also as "optimistic locking") for checking consistency between data presented to user (frontend side) and actual state of entity in database (backend side).
+8. Database deadlock avoidance.
+9. Zero CRUD, zero PUT/PATCH/DELETE.
+10. Using ready-made solutions to create API documentation based on data structures prepared for the Serializer and constraints needed for the Validator.
+11. Limiting setters and getters to the necessary minimum.
+12. High coverage by unit tests.
 
 ## 4-layers Architecture
 
@@ -226,7 +227,9 @@ It will download required images, build custom image for PHP and execute script 
 
     php bin/console doctrine:database:create
     php bin/console doctrine:migrations:migrate
-    php bin/console admin:init
+    php bin/console admin:init-common
+    php bin/console admin:migrate-tenants
+    php bin/console admin:init-tenants
 
     php -S 0.0.0.0:8000 -t public/
 

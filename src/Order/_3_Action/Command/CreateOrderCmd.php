@@ -43,9 +43,7 @@ class CreateOrderCmd implements CreateOrderInterface
         $this->dtoValidator->validate($dto, __FUNCTION__);
 
         if ($dto->loadingFixedAddressExternalId !== null) {
-            $fixedAddress = $this->addressRepository->findOneBy(
-                ['customerId' => $this->userBag->getCustomerId(), 'externalId' => $dto->loadingFixedAddressExternalId]
-            );
+            $fixedAddress = $this->addressRepository->findOneBy(['externalId' => $dto->loadingFixedAddressExternalId]);
             $this->addressValidator->validateExists($fixedAddress);
         } else {
             $fixedAddress = null;
@@ -72,7 +70,7 @@ class CreateOrderCmd implements CreateOrderInterface
      */
     private function createOrderHeader(CreateOrderDto $dto, FixedAddress|null $fixedAddress): Order
     {
-        $order = new Order($this->userBag->getCustomerId(), $this->orderNumberGenerator());
+        $order = new Order($this->orderNumberGenerator());
         $order->setLoadingDate(new DateTime($dto->loadingDate));
         if ($fixedAddress !== null) {
             $order->setLoadingFixedAddressExternalId($dto->loadingFixedAddressExternalId);
@@ -105,7 +103,7 @@ class CreateOrderCmd implements CreateOrderInterface
     {
         do {
             $nr = $this->userBag->getCustomerId() . '/' . date('Ymd') . '/' . rand(1, 9999);
-            $count = $this->orderRepository->count(['customerId' => $this->userBag->getCustomerId(), 'number' => $nr]);
+            $count = $this->orderRepository->count(['number' => $nr]);
         } while ($count > 0);
 
         return $nr;
@@ -113,7 +111,7 @@ class CreateOrderCmd implements CreateOrderInterface
 
     private function createOrderLine(OrderLineDto $lineDto): OrderLine
     {
-        $entity = new OrderLine($this->userBag->getCustomerId());
+        $entity = new OrderLine();
         $entity->setQuantity($lineDto->quantity);
         $entity->setLength($lineDto->length);
         $entity->setWidth($lineDto->width);

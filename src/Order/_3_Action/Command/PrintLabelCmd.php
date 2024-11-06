@@ -35,7 +35,6 @@ class PrintLabelCmd implements PrintLabelInterface
     {
         $order = $this->orderRepository->getWithLock($orderId);
         $this->orderValidator->validateExists($order);
-        $this->orderValidator->validateHasAccess($order);
 
         if ($order->getStatus() !== OrderStatusEnum::CONFIRMED) {
             return [false, 'ORDER_PRINT_LABEL_STATUS_NOT_VALID_FOR_PRINT'];

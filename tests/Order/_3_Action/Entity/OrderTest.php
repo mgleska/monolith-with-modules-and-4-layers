@@ -17,12 +17,11 @@ class OrderTest extends TestCase
 {
     private Order $sut;
 
-    private const CUSTOMER_ID = 1;
     private const NUMBER = '123/12345678/456';
 
     protected function setUp(): void
     {
-        $this->sut = new Order(self::CUSTOMER_ID, self::NUMBER);
+        $this->sut = new Order(self::NUMBER);
     }
 
     #[Test]
@@ -36,9 +35,9 @@ class OrderTest extends TestCase
     #[Test]
     public function addLine(): void
     {
-        $line1 = (new OrderLine(self::CUSTOMER_ID))
+        $line1 = (new OrderLine())
             ->setQuantity(3);
-        $line2 = (new OrderLine(self::CUSTOMER_ID))
+        $line2 = (new OrderLine())
             ->setQuantity(5);
 
         $this->sut->addLine($line1);
@@ -53,10 +52,10 @@ class OrderTest extends TestCase
     #[Test]
     public function removeLine(): void
     {
-        $line1 = (new OrderLine(self::CUSTOMER_ID))
+        $line1 = (new OrderLine())
             ->setQuantity(3)
             ->setGoodsDescription('computers');
-        $line2 = (new OrderLine(self::CUSTOMER_ID))
+        $line2 = (new OrderLine())
             ->setQuantity(5)
             ->setGoodsDescription('printers');
 
@@ -74,10 +73,10 @@ class OrderTest extends TestCase
     #[Test]
     public function removeLineNoChange(): void
     {
-        $line1 = (new OrderLine(self::CUSTOMER_ID))
+        $line1 = (new OrderLine())
             ->setQuantity(3)
             ->setGoodsDescription('computers');
-        $line2 = (new OrderLine(self::CUSTOMER_ID))
+        $line2 = (new OrderLine())
             ->setQuantity(5)
             ->setGoodsDescription('printers');
 
@@ -94,7 +93,7 @@ class OrderTest extends TestCase
     #[Test]
     public function updateLine(): void
     {
-        $line1 = (new OrderLine(self::CUSTOMER_ID))
+        $line1 = (new OrderLine())
             ->setQuantity(3)
             ->setLength(101)
             ->setWidth(102)
@@ -102,7 +101,7 @@ class OrderTest extends TestCase
             ->setWeightOnePallet(20000)
             ->setWeightTotal(60000)
             ->setGoodsDescription('computers');
-        $line2 = (new OrderLine(self::CUSTOMER_ID))
+        $line2 = (new OrderLine())
             ->setQuantity(1)
             ->setLength(104)
             ->setWidth(105)
@@ -114,7 +113,7 @@ class OrderTest extends TestCase
         $this->sut->addLine($line1);
         $this->sut->addLine($line2);
 
-        $lineUpd = (new OrderLine(self::CUSTOMER_ID))
+        $lineUpd = (new OrderLine())
             ->setQuantity(3)
             ->setLength(204)
             ->setWidth(205)

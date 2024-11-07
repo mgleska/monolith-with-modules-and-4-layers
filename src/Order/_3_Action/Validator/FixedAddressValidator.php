@@ -28,9 +28,9 @@ class FixedAddressValidator
         }
     }
 
-    public function validateExternalIdNotUsed(int $customerId, string $externalId): void
+    public function validateExternalIdNotUsed(string $externalId): void
     {
-        $address = $this->addressRepository->findOneBy(['customerId' => $customerId, 'externalId' => $externalId]);
+        $address = $this->addressRepository->findOneBy(['externalId' => $externalId]);
         if ($address !== null) {
             throw new ApiProblemException(
                 Response::HTTP_PRECONDITION_FAILED,

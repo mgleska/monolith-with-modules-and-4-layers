@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Order\_3_Action\Validator;
 
-use App\Auth\_2_Export\UserBagInterface;
 use App\CommonInfrastructure\Api\ApiProblemException;
 use App\Order\_2_Export\Dto\Order\OrderAddressDto;
 use App\Order\_3_Action\Entity\FixedAddress;
@@ -14,11 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class OrderValidator
 {
-    public function __construct(
-        private readonly UserBagInterface $userBag,
-    ) {
-    }
-
     /**
      * @throws ApiProblemException
      */
@@ -29,17 +23,6 @@ class OrderValidator
                 Response::HTTP_NOT_FOUND,
                 ApiProblemTypeEnum::VALIDATOR->value,
                 'ORDER_ORDER_NOT_FOUND'
-            );
-        }
-    }
-
-    public function validateHasAccess(Order $order): void
-    {
-        if ($order->getCustomerId() !== $this->userBag->getCustomerId()) {
-            throw new ApiProblemException(
-                Response::HTTP_FORBIDDEN,
-                ApiProblemTypeEnum::VALIDATOR->value,
-                'ORDER_ORDER_NO_ACCESS'
             );
         }
     }

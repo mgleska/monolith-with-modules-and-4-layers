@@ -18,9 +18,6 @@ class OrderSscc
     #[ORM\Column]
     private int $id;
 
-    #[ORM\Column]
-    private int $customerId;
-
     #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'ssccs')]
     #[ORM\JoinColumn(name: 'order_id', referencedColumnName: 'id', nullable: false)]
     private Order $order;
@@ -28,19 +25,9 @@ class OrderSscc
     #[ORM\Column(type: Types::BIGINT)]
     private int $code;
 
-    public function __construct(int $customerId)
-    {
-        $this->customerId = $customerId;
-    }
-
     public function getId(): int
     {
         return $this->id;
-    }
-
-    public function getCustomerId(): int
-    {
-        return $this->customerId;
     }
 
     public function getOrder(): Order

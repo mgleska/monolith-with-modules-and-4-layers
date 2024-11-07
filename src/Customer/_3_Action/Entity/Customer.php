@@ -22,6 +22,9 @@ class Customer
     #[ORM\Column(length: 255)]
     private string $name;
 
+    #[ORM\Column(length: 50)]
+    private string $dbNameSuffix;
+
     public function __construct()
     {
         $this->version = 0;
@@ -47,6 +50,16 @@ class Customer
         $this->name = $name;
 
         return $this;
+    }
+
+    public function getDbNameSuffix(): string
+    {
+        return $this->dbNameSuffix;
+    }
+
+    public function setDbNameSuffix(string $dbNameSuffix): void
+    {
+        $this->dbNameSuffix = $dbNameSuffix;
     }
 
     public function incrementVersion(): void

@@ -20,6 +20,7 @@ services:
             - '../src/Kernel.php'
             - '../src/CommonInfrastructure/Api/Dto'
             - '../src/Auth/_3_Action/Entity'
+            - '../src/Customer/_2_Export/Dto'
             - '../src/Customer/_3_Action/Entity'
             - '../src/Order/_2_Export/Dto'
             - '../src/Order/_2_Export/Exception'
@@ -32,3 +33,11 @@ services:
     App\CommonInfrastructure\Api\ApiProblemExceptionHandler:
         tags:
             - {name: kernel.event_listener, event: kernel.exception}
+
+    App\Admin\_1_Connector\EventHandler\OnKernelControllerHandler:
+        tags:
+            - {name: kernel.event_listener, event: kernel.controller}
+
+    App\Admin\_3_Action\Command\MigrateTenantsDbCmd:
+        arguments:
+            $projectDir: '%kernel.project_dir%'

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Order\_3_Action\Command;
 
-use App\Auth\_2_Export\UserBagInterface;
 use App\CommonInfrastructure\Api\ApiProblemException;
 use App\CommonInfrastructure\GenericDtoValidator;
 use App\Order\_2_Export\Dto\Order\OrderDto;
@@ -36,8 +35,6 @@ class UpdateOrderLinesCmdTest extends TestCase
     private MockObject|OrderRepository $orderRepository;
     private MockObject|LoggerInterface $logger;
 
-    private const CUSTOMER_ID = 1;
-
     /**
      * @throws MockException
      */
@@ -46,14 +43,10 @@ class UpdateOrderLinesCmdTest extends TestCase
         $this->orderRepository = $this->createMock(OrderRepository::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
-        $userBag = $this->createMock(UserBagInterface::class);
-        $userBag->method('getCustomerId')->willReturn(self::CUSTOMER_ID);
-
         $this->sut = new UpdateOrderLinesCmd(
             $this->orderRepository,
             $this->createMock(OrderValidator::class),
             $this->logger,
-            $userBag,
             $this->createMock(GenericDtoValidator::class)
         );
     }
@@ -170,7 +163,6 @@ class UpdateOrderLinesCmdTest extends TestCase
                 'orderData' => [
                     'id' => 7,
                     'version' => 1,
-                    'customerId' => self::CUSTOMER_ID,
                     'number' => '123/12345678/456',
                     'status' => OrderStatusEnum::NEW,
                     'quantityTotal' => 5,
@@ -209,7 +201,6 @@ class UpdateOrderLinesCmdTest extends TestCase
                 'orderData' => [
                     'id' => 7,
                     'version' => 1,
-                    'customerId' => self::CUSTOMER_ID,
                     'number' => '123/12345678/456',
                     'status' => OrderStatusEnum::NEW,
                     'quantityTotal' => 7,
@@ -250,7 +241,6 @@ class UpdateOrderLinesCmdTest extends TestCase
                 'orderData' => [
                     'id' => 7,
                     'version' => 1,
-                    'customerId' => self::CUSTOMER_ID,
                     'number' => '123/12345678/456',
                     'status' => OrderStatusEnum::NEW,
                     'quantityTotal' => 27,
@@ -291,7 +281,6 @@ class UpdateOrderLinesCmdTest extends TestCase
                 'orderData' => [
                     'id' => 7,
                     'version' => 1,
-                    'customerId' => self::CUSTOMER_ID,
                     'number' => '123/12345678/456',
                     'status' => OrderStatusEnum::NEW,
                     'quantityTotal' => 18,
@@ -333,7 +322,6 @@ class UpdateOrderLinesCmdTest extends TestCase
                 'orderData' => [
                     'id' => 7,
                     'version' => 1,
-                    'customerId' => self::CUSTOMER_ID,
                     'number' => '123/12345678/456',
                     'status' => OrderStatusEnum::NEW,
                     'quantityTotal' => 7,

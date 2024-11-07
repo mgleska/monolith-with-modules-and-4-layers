@@ -6,6 +6,7 @@ namespace App\Customer\_3_Action\Service;
 
 use App\Customer\_2_Export\ValidateIdInterface;
 use App\Customer\_4_Infrastructure\Repository\CustomerRepository;
+use Doctrine\DBAL\Exception as DBALException;
 
 class ValidatorService implements ValidateIdInterface
 {
@@ -14,12 +15,11 @@ class ValidatorService implements ValidateIdInterface
     ) {
     }
 
+    /**
+     * @throws DBALException
+     */
     public function isIdValid(int $id): bool
     {
-        if ($this->repository->count(["id" => $id]) === 0) {
-            return false;
-        }
-
-        return true;
+        return $this->repository->checkId($id);
     }
 }

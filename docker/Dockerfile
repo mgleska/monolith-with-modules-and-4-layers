@@ -13,10 +13,9 @@ RUN apk update && \
     apk add php83-pecl-xdebug && \
     ln -s /usr/lib/php83/modules/xdebug.so `php -i | awk '$1=="extension_dir" {print $NF}'`/xdebug.so
 
-COPY ./xdebug.ini /usr/local/etc/php/conf.d/99-xdebug.ini
+COPY ./php-local.ini /usr/local/etc/php/conf.d/90-local.ini
 
 CMD /bin/sh
-
 
 
 FROM base AS app-kubernetes

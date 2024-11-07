@@ -22,7 +22,6 @@ class OrderValidatorTest extends TestCase
     private MockObject|UserBagInterface $userBag;
 
     private const CUSTOMER_ID = 1;
-    private const INVALID_CUSTOMER_ID = 2;
 
     /**
      * @noinspection PhpUnhandledExceptionInspection
@@ -33,7 +32,7 @@ class OrderValidatorTest extends TestCase
 
         $this->userBag->method('getCustomerId')->willReturn(self::CUSTOMER_ID);
 
-        $this->sut = new OrderValidator($this->userBag);
+        $this->sut = new OrderValidator();
     }
 
     #[Test]
@@ -63,41 +62,8 @@ class OrderValidatorTest extends TestCase
                 'expected' => 'ORDER_ORDER_NOT_FOUND',
             ],
             'valid' => [
-                'order' => new Order(self::CUSTOMER_ID, 'number'),
+                'order' => new Order('number'),
                 'expected' => '',
-            ],
-        ];
-    }
-
-    #[Test]
-    #[DataProvider('dataProviderValidateHasAccess')]
-    public function validateHasAccess(
-        int $customerId,
-        string $expected
-    ): void {
-        if ($expected) {
-            $this->expectException(ApiProblemException::class);
-            $this->expectExceptionMessageMatches('/^' . $expected . '$/');
-        } else {
-            $this->expectNotToPerformAssertions();
-        }
-
-        $this->sut->validateHasAccess(new Order($customerId, 'number'));
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public static function dataProviderValidateHasAccess(): array
-    {
-        return [
-            'yes' => [
-                'customerId' => self::CUSTOMER_ID,
-                'expected' => '',
-            ],
-            'no' => [
-                'customerId' => self::INVALID_CUSTOMER_ID,
-                'expected' => 'ORDER_ORDER_NO_ACCESS',
             ],
         ];
     }
@@ -132,7 +98,7 @@ class OrderValidatorTest extends TestCase
                 'expectedExceptionMsg' => 'ORDER_CREATE_LOADING_ADDRESS_NOT_SPECIFIED',
             ],
             'set-both' => [
-                'fixedAddress' => new FixedAddress(self::CUSTOMER_ID),
+                'fixedAddress' => new FixedAddress(),
                 'addressDto' => new OrderAddressDto('', '', '', ''),
                 'expectedExceptionMsg' => 'ORDER_CREATE_LOADING_ADDRESS_SPECIFIED_BY_EXTERNAL_ID_AND_BY_VALUE',
             ],
@@ -142,7 +108,7 @@ class OrderValidatorTest extends TestCase
                 'expectedExceptionMsg' => '',
             ],
             'valid-external-id' => [
-                'fixedAddress' => new FixedAddress(self::CUSTOMER_ID),
+                'fixedAddress' => new FixedAddress(),
                 'addressDto' => null,
                 'expectedExceptionMsg' => '',
             ],

@@ -6,10 +6,10 @@ namespace App\Admin\_2_Export;
 
 use Doctrine\DBAL\Exception as DBALException;
 
-interface InitDbLoadInterface
+interface InitTenantsDbInterface
 {
     /**
      * @throws DBALException
      */
-    public function initDbLoad(): void;
+    public function initTenantsDb(): void;
 }

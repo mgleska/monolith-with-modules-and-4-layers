@@ -26,8 +26,6 @@ class FixedAddressValidatorTest extends TestCase
 
     private FixedAddressRepository|RepositoryMockObject $addressRepository;
 
-    private const CUSTOMER_ID = 1;
-
     protected function setUp(): void
     {
         $this->addressRepository = $this->createRepositoryMock(FixedAddressRepository::class);
@@ -62,7 +60,7 @@ class FixedAddressValidatorTest extends TestCase
                 'expected' => 'ORDER_FIXEDADDRESS_NOT_FOUND',
             ],
             'valid' => [
-                'address' => new FixedAddress(self::CUSTOMER_ID),
+                'address' => new FixedAddress(),
                 'expected' => '',
             ],
         ];
@@ -71,14 +69,12 @@ class FixedAddressValidatorTest extends TestCase
     #[Test]
     #[DataProvider('dataProviderValidateExternalIdNotUsed')]
     public function validateExternalIdNotUsed(
-        int $customerId,
         string $externalId,
         string $expected
     ): void {
         $this->addressRepository->loadStore([
             [
                 'id' => 1,
-                'customerId' => 10,
                 'externalId' => 'WH1',
             ]
         ]);
@@ -90,7 +86,7 @@ class FixedAddressValidatorTest extends TestCase
             $this->expectNotToPerformAssertions();
         }
 
-        $this->sut->validateExternalIdNotUsed($customerId, $externalId);
+        $this->sut->validateExternalIdNotUsed($externalId);
     }
 
     /**
@@ -100,17 +96,10 @@ class FixedAddressValidatorTest extends TestCase
     {
         return [
             'id-not-used' => [
-                'customerId' => 10,
                 'externalId' => 'AAA',
                 'expected' => '',
             ],
-            'different-customer' => [
-                'customerId' => 22,
-                'externalId' => 'WH1',
-                'expected' => '',
-            ],
             'conflict' => [
-                'customerId' => 10,
                 'externalId' => 'WH1',
                 'expected' => 'ORDER_FIXEDADDRESS_EXTERNAL_ID_ALREADY_EXIST',
             ],

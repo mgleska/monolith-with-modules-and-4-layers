@@ -15,9 +15,6 @@ class OrderLine
     #[ORM\Column]
     private int $id;
 
-    #[ORM\Column]
-    private int $customerId;
-
     #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'lines')]
     #[ORM\JoinColumn(name: 'order_id', referencedColumnName: 'id', nullable: false)]
     private Order $order;
@@ -48,19 +45,9 @@ class OrderLine
     #[ORM\Column(length: 250)]
     private string $goodsDescription;
 
-    public function __construct(int $customerId)
-    {
-        $this->customerId = $customerId;
-    }
-
     public function getId(): int
     {
         return $this->id;
-    }
-
-    public function getCustomerId(): int
-    {
-        return $this->customerId;
     }
 
     public function getOrder(): Order

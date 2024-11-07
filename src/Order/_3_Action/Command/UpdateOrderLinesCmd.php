@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Order\_3_Action\Command;
 
-use App\Auth\_2_Export\UserBagInterface;
 use App\CommonInfrastructure\Api\ApiProblemException;
 use App\CommonInfrastructure\GenericDtoValidator;
 use App\Order\_2_Export\Command\UpdateOrderLinesInterface;
@@ -29,7 +28,6 @@ class UpdateOrderLinesCmd implements UpdateOrderLinesInterface
         private readonly OrderRepository $orderRepository,
         private readonly OrderValidator $validator,
         private readonly LoggerInterface $logger,
-        private readonly UserBagInterface $userBag,
         private readonly GenericDtoValidator $dtoValidator,
     ) {
     }
@@ -44,7 +42,6 @@ class UpdateOrderLinesCmd implements UpdateOrderLinesInterface
 
         $order = $this->orderRepository->getWithLock($dto->orderId);
         $this->validator->validateExists($order);
-        $this->validator->validateHasAccess($order);
 
         if ($order->getVersion() !== $dto->version) {
             return [false, 'ORDER_VERSION_IN_DATABASE_IS_DIFFERENT'];
@@ -128,7 +125,7 @@ class UpdateOrderLinesCmd implements UpdateOrderLinesInterface
 
     private function createOrderLine(OrderLineDto $lineDto): OrderLine
     {
-        $entity = new OrderLine($this->userBag->getCustomerId());
+        $entity = new OrderLine();
         $entity->setQuantity($lineDto->quantity);
         $entity->setLength($lineDto->length);
         $entity->setWidth($lineDto->width);

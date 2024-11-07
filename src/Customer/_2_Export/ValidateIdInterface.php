@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Customer\_2_Export;
 
-use App\CommonInfrastructure\Api\ApiProblemException;
+use Doctrine\DBAL\Exception as DBALException;
 
 interface ValidateIdInterface
 {
     /**
-     * @throws ApiProblemException
+     * @throws DBALException
      */
     public function isIdValid(int $id): bool;
 }

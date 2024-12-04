@@ -13,6 +13,7 @@ use App\Order\_2_Export\Dto\Order\UpdateOrderLinesDto;
 use App\Order\_2_Export\Enum\OrderStatusEnum;
 use App\Order\_3_Action\Entity\OrderLine;
 use App\Order\_3_Action\Enum\ApiProblemTypeEnum;
+use App\Order\_3_Action\Helper\OrderHelper;
 use App\Order\_3_Action\Validator\OrderValidator;
 use App\Order\_4_Infrastructure\Repository\OrderRepository;
 use Exception;
@@ -103,7 +104,7 @@ class UpdateOrderLinesCmd implements UpdateOrderLinesInterface
             );
         }
 
-        return [true, OrderDto::fromEntity($order)];
+        return [true, OrderHelper::createOrderDtoFromEntity($order)];
     }
 
     private function isModifiedLine(OrderLine $entity, OrderLineDto $lineDto): bool

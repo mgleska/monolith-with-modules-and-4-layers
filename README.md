@@ -74,7 +74,6 @@ It is important to note, that 2:Export layer **defines** but **not implement** a
 
 General rule for layer 2:Export is, that component from this layer can **use** only:
 * interfaces and structures defined in own layer,
-* structures defined at layers 3 and 4 with restriction, that used structures are not exposed to "external world"
 * classes and objects from common infrastructure, framework and `vendors/*`.
 
 

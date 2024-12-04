@@ -13,7 +13,7 @@ const EXPORT_DIR_1 = '_2_Export';
 const EXPORT_DIR_2 = 'Export';
 const CONNECTOR_DIR_1 = '_1_Connector';
 const CONNECTOR_DIR_2 = 'Connector';
-const COMMON_IFRASTRUCTURE_DIR = 'CommonInfrastructure';
+const COMMON_INFRASTRUCTURE_DIR = 'CommonInfrastructure';
 
 $parser = (new ParserFactory())->createForHostVersion();
 $traverser = new NodeTraverser;
@@ -89,7 +89,7 @@ function analyze(array $stmts): array
                 if ($prts[0] !== $app) {
                     continue;
                 }
-                if ($prts[1] === COMMON_IFRASTRUCTURE_DIR) {
+                if ($prts[1] === COMMON_INFRASTRUCTURE_DIR) {
                     continue;
                 }
                 if ($prts[1] !== $module) {
@@ -113,6 +113,16 @@ function analyze(array $stmts): array
                         'classPath' => $use->name->name,
                     ];
                 }
+                if ($prts[1] === $module
+                    && ($layer === EXPORT_DIR_1 || $layer === EXPORT_DIR_2)
+                    && (count($prts) === 2 || ! ($prts[2] === EXPORT_DIR_1 || $prts[2] === EXPORT_DIR_2))
+                ) {
+                    $errors[] = [
+                        'type' => 'use-layer-2',
+                        'lineNumber' => $use->name->getLine(),
+                        'classPath' => $use->name->name,
+                    ];
+                }
             }
         }
     }
@@ -129,11 +139,16 @@ function display(string $file, array $errors): void
     print "  Line  " . $file . "\n";
     print " ------ -----------------------------------------------------------------------------------------\n";
     foreach ($errors as $error) {
-        if ($error['type'] === 'use-module') {
-            printf("  %-4d  'use' statement breaks module boundary. Imported class/namespace: %s\n", $error['lineNumber'], $error['classPath']);
-        }
-        if ($error['type'] === 'use-layer-1') {
-            printf("  %-4d  'use' statement at layer 1 loads class from layer below 2. Imported class/namespace: %s\n", $error['lineNumber'], $error['classPath']);
+        switch ($error['type']) {
+            case 'use-module':
+                printf("  %-4d  'use' statement breaks module boundary. Imported class/namespace: %s\n", $error['lineNumber'], $error['classPath']);
+                break;
+            case 'use-layer-1':
+                printf("  %-4d  'use' statement at layer 1 loads class from layer below 2. Imported class/namespace: %s\n", $error['lineNumber'], $error['classPath']);
+                break;
+            case 'use-layer-2':
+                printf("  %-4d  'use' statement at layer 2 loads class from other layer. Imported class/namespace: %s\n", $error['lineNumber'], $error['classPath']);
+                break;
         }
     }
     print " ------ -----------------------------------------------------------------------------------------\n\n";

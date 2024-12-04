@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Order\_2_Export\Dto\Order;
 
-use App\Order\_3_Action\Entity\OrderLine;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -56,19 +55,5 @@ class OrderLineDto
         $this->weightOnePallet = $weightOnePallet;
         $this->weightTotal = $weightTotal;
         $this->goodsDescription = $goodsDescription;
-    }
-
-    public static function fromEntity(OrderLine $entity): self
-    {
-        return new self(
-            $entity->getId(),
-            $entity->getQuantity(),
-            $entity->getLength(),
-            $entity->getWidth(),
-            $entity->getHeight(),
-            $entity->getWeightOnePallet() / 100.0,
-            $entity->getWeightTotal() / 100.0,
-            $entity->getGoodsDescription()
-        );
     }
 }

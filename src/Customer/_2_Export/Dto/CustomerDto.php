@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Customer\_2_Export\Dto;
 
-use App\Customer\_3_Action\Entity\Customer;
-
 class CustomerDto
 {
     public readonly int $id;
@@ -19,15 +17,5 @@ class CustomerDto
         $this->version = $version;
         $this->name = $name;
         $this->dbNameSuffix = $dbNameSuffix;
-    }
-
-    public static function fromEntity(Customer $entity): self
-    {
-        return new self(
-            $entity->getId(),
-            $entity->getVersion(),
-            $entity->getName(),
-            $entity->getDbNameSuffix()
-        );
     }
 }

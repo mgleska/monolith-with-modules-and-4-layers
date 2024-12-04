@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Order\_2_Export\Dto\FixedAddress;
 
-use App\Order\_3_Action\Entity\FixedAddress;
 use OpenApi\Attributes as OA;
 
 class FixedAddressDto
@@ -36,18 +35,5 @@ class FixedAddressDto
         $this->address = $address;
         $this->city = $city;
         $this->zipCode = $zipCode;
-    }
-
-    public static function fromEntity(FixedAddress $address): self
-    {
-        return new self(
-            $address->getId(),
-            $address->getVersion(),
-            $address->getExternalId(),
-            $address->getNameCompanyOrPerson(),
-            $address->getAddress(),
-            $address->getCity(),
-            $address->getZipCode()
-        );
     }
 }

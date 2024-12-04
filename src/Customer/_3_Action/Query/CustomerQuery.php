@@ -7,6 +7,7 @@ namespace App\Customer\_3_Action\Query;
 use App\CommonInfrastructure\Api\ApiProblemException;
 use App\Customer\_2_Export\Dto\CustomerDto;
 use App\Customer\_2_Export\GetCustomerInterface;
+use App\Customer\_3_Action\Helper\CustomerHelper;
 use App\Customer\_3_Action\Validator\CustomerValidator;
 use App\Customer\_4_Infrastructure\Repository\CustomerRepository;
 
@@ -26,6 +27,6 @@ class CustomerQuery implements GetCustomerInterface
         $customer = $this->repository->findById($id);
         $this->validator->validateExists($customer);
 
-        return CustomerDto::fromEntity($customer);
+        return CustomerHelper::createCustomerDtoFromEntity($customer);
     }
 }

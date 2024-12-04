@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Order\_2_Export\Dto\Order;
 
-use App\Order\_3_Action\Entity\OrderSscc;
 use OpenApi\Attributes as OA;
 
 class OrderSsccDto
@@ -18,10 +17,5 @@ class OrderSsccDto
     {
         $this->id = $id;
         $this->code = $code;
-    }
-
-    public static function fromEntity(OrderSscc $entity): self
-    {
-        return new self($entity->getId(), $entity->getCode());
     }
 }
